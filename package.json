@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/katarinaNinkovic96/MERN_eShop_MSc#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "colors": "^1.4.0",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
