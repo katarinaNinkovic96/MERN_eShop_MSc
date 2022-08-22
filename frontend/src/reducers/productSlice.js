@@ -24,23 +24,17 @@ const productSlice = createSlice({
     name: 'products',
     initialState,
     reducers: {
-        productListRequest(state, action) {
-            return {
-                loading: true,
-                products: []
-            };
+        productListRequest: (state, action) => {
+            state.loading = true;
+            state.products = [];
         },
-        productListSuccess(state, action) {
-            return {
-                loading: false,
-                products: action.payload
-            };
+        productListSuccess: (state, action) => {
+            state.loading = false;
+            state.products = action.payload;
         },
-        productListFail(state, action) {
-            return {
-                loading: false,
-                error: action.payload  
-            };
+        productListFail: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
         }
     }
 });
