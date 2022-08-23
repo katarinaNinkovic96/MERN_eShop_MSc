@@ -1,5 +1,6 @@
 import axios from 'axios'
 import {productListRequest, productListSuccess, productListFail} from '../reducers/productSlice';
+import { productDetailsRequest, productDetailsSuccess, productDetailsFail } from '../reducers/productSlice';
 
 export const listProducts = () => async (dispatch) => {
     try {
@@ -10,5 +11,18 @@ export const listProducts = () => async (dispatch) => {
         dispatch(productListSuccess(data));
     } catch (error) {
         dispatch(productListFail(error.response && error.response.data.message ? error.response.data.message : error.message))
+    }
+}
+
+
+export const listProductDetails = (id) => async (dispatch) => {
+    try {
+        dispatch(productDetailsRequest());
+
+        const { data } = await axios.get(`/api/products/${id}`);
+
+        dispatch(productDetailsSuccess(data));
+    } catch (error) {
+        dispatch(productDetailsFail(error.response && error.response.data.message ? error.response.data.message : error.message))
     }
 }

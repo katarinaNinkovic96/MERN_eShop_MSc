@@ -19,16 +19,18 @@
 
 import { createSlice } from '@reduxjs/toolkit';
 
-const initialState = {};
+//first//////////////////////////////////
 const productSlice = createSlice({
     name: 'products',
-    initialState,
+    initialState: {
+        products: []
+    },
     reducers: {
         productListRequest: (state, action) => {
             state.loading = true;
             state.products = [];
         },
-        productListSuccess: (state, action) => {
+        productListSuccess: (state = { products: [] }, action) => {
             state.loading = false;
             state.products = action.payload;
         },
@@ -41,3 +43,27 @@ const productSlice = createSlice({
 
 export const productReducer = productSlice.reducer;
 export const { productListRequest, productListSuccess, productListFail } = productSlice.actions;
+
+//second/////////////////////////////////////////////////////
+const productDetailsSlice = createSlice({
+    name: 'products',
+    initialState: {
+        product: { reviews: [] }
+    },
+    reducers: {
+        productDetailsRequest: (state, action) => {
+            state.loading = true;
+        },
+        productDetailsSuccess: (state, action) => {
+            state.loading = false;
+            state.product = action.payload;
+        },
+        productDetailsFail: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        }
+    }
+});
+
+export const productDetailsReducer = productDetailsSlice.reducer;
+export const { productDetailsRequest, productDetailsSuccess, productDetailsFail } = productDetailsSlice.actions;
