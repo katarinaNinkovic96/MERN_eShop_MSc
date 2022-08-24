@@ -1,14 +1,16 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
-import { Row, Col, Image, ListGroup, Card, Button} from 'react-bootstrap'
+import { Row, Col, Image, ListGroup, Card, Button, FormControl} from 'react-bootstrap'
 import Rating from '../commponents/Rating'
 import { listProductDetails } from '../actions/productActions'
 import Loader from '../commponents/Loader'
 import Message from '../commponents/Message'
 
 
-const ProductScreen = ( {match}) => {
+const ProductScreen = ( {history, match}) => {
+  const [qty, setQty] = useState(0)
+
   const dispatch = useDispatch()
 
   const productDetails = useSelector(state => state.productDetails);
@@ -17,6 +19,11 @@ const ProductScreen = ( {match}) => {
   useEffect(() =>{
     dispatch(listProductDetails(match.params.id))
   }, [dispatch, match])
+
+  const addToCartHandler = () => {
+    history.push(`/cart/${match.params.id}?qty=${qty}`)
+  }
+  
 
   return (
     <>
@@ -62,9 +69,31 @@ const ProductScreen = ( {match}) => {
                 </Col>
               </Row>
             </ListGroup.Item>
+          
+            {product.countInStock > 0 && (
+              <ListGroup.Item>
+                <Row>
+                  <Col>Quantity</Col>
+                  <Col>
+                    <FormControl 
+                      as = 'select' 
+                      value = {qty} 
+                      onChange = {(e) => setQty(e.target.value)}
+                    >
+                       {[...Array(product.countInStock).keys()].map(x => (
+                        <option key = {x + 1} value = {x + 1}>
+                          {x + 1}
+                        </option>
+                       ))}
+                    </FormControl>
+                  </Col>
+                </Row>
+              </ListGroup.Item>
+            )}
 
             <ListGroup.Item>
               <Button 
+                onClick = {addToCartHandler}
                 className='btn-block' 
                 type='button'
                 disabled={product.countInStock ===0}
@@ -82,3 +111,6 @@ const ProductScreen = ( {match}) => {
 
 export default ProductScreen
 //fluid kako bi slika bila zadrzana u kontejneru
+//[...Array(product.countInStock).keys()] ovaj niz predstavljao kao npr da imamo niz od 5 clana pisalo bi [0,1,2,3,4], predstavlja kolicini Qty in Stock
+//key use when i create list.  We ser key to x+1 because array starts with 0 and we wnat 1,2,3..
+//inside option for text displays and also be x+1

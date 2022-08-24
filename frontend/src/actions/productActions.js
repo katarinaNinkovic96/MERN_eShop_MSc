@@ -1,6 +1,6 @@
 import axios from 'axios'
-import {productListRequest, productListSuccess, productListFail} from '../reducers/productSlice';
-import { productDetailsRequest, productDetailsSuccess, productDetailsFail } from '../reducers/productSlice';
+import {productListRequest, productListSuccess, productListFail} from '../reducers/productReducers';
+import { productDetailsRequest, productDetailsSuccess, productDetailsFail } from '../reducers/productReducers';
 
 export const listProducts = () => async (dispatch) => {
     try {
