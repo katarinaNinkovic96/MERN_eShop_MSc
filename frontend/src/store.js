@@ -16,13 +16,15 @@
 // );
 
 import {configureStore } from '@reduxjs/toolkit';
-import {productReducer, productDetailsReducer } from './reducers/productSlice';
-
+import {productReducer, productDetailsReducer } from './reducers/productReducers';
+import { cartReducer } from './reducers/cartReducers'
 
 const store = configureStore({
   reducer: {
     productList: productReducer,
-    productDetails: productDetailsReducer
+    productDetails: productDetailsReducer,
+    cart: cartReducer
+
   }
 });
 
