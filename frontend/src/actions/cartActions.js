@@ -1,25 +1,30 @@
 import axios from 'axios'
-import { cartAddItem } from '../reducers/cartReducers'
+import { cartAddItem, cartRemoveItem } from '../reducers/cartReducers'
 
 
 export const addToCart = (id, qty) => async (dispatch, getState) => {
-    const { data } = await axios.get(`/api/products/${id}`)
+    const { data } = await axios.get(`/api/products/${id}`);
+    const { _id, name, image, price, countInStock } = data;
 
-    dispatch({
-        type: cartAddItem,
-        payload: {
-            product: data._id,
-            name: data.name,
-            image: data.image,
-            price: data.price,
-            counterInStock: data.counterInStock,
-            qty
-        }
-    })
+    dispatch(cartAddItem({
+        product: _id,
+        name,
+        image,
+        price,
+        countInStock,
+        qty
+    }));
 
     localStorage.setItem(`cartItems`, JSON.stringify(getState().cart.cartItems))
 }
 
+export const removeFromCart = (id) => (dispatch, getState) => {
+    dispatch(cartRemoveItem({
+        id
+    }));
+
+    localStorage.setItem(`cartItems`, JSON.stringify(getState().cart.cartItems))
+}
 
 
 //we import axios because when we add an item to the cart, we want to make a request to API products and
