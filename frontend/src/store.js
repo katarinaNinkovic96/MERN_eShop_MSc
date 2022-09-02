@@ -18,12 +18,14 @@
 import {configureStore } from '@reduxjs/toolkit';
 import {productReducer, productDetailsReducer } from './reducers/productReducers';
 import { cartReducer } from './reducers/cartReducers'
+import { userLoginReducer } from './reducers/userReducers'
 
 const store = configureStore({
   reducer: {
     productList: productReducer,
     productDetails: productDetailsReducer,
-    cart: cartReducer
+    cart: cartReducer,
+    userLogin: userLoginReducer
 
   }
 });
