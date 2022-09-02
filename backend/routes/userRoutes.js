@@ -1,6 +1,6 @@
 import express from 'express'
 const router = express.Router()
-import { authUser, getUserProfile } from '../controllers/userController.js'
+import { authUser, registerUser, getUserProfile } from '../controllers/userController.js'
 import { protect } from '../middleware/authMiddleware.js'
 
 //all the functionality will go in the controller
@@ -10,6 +10,8 @@ import { protect } from '../middleware/authMiddleware.js'
 //we use '/login' because this is going to be hooked to /api/users
 //rouut post 'login' and then we call authUser
 router.post('/login', authUser)
+
+router.route('/').post(registerUser)
 
 //we use router.route because we will be making more - making a GET req and a put req to update the user profile
 //getUserProfile I want to protect and this method that runs, so to implement middleware (put it as a first argument)
