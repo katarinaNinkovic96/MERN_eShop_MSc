@@ -23,7 +23,8 @@ const userLoginSlice = createSlice({
             state.error = action.payload;
         },
         userLogout: (state, action) => {
-            
+            state.loading = false;
+            state.userInfo = action.payload;
         }
     }
 });

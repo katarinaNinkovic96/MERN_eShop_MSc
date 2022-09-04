@@ -35,3 +35,12 @@ export const login = ( email, password ) => async (dispatch) => {
         dispatch(userLoginFail(error.response && error.response.data.message ? error.response.data.message : error.message))
     }
 }
+
+
+export const logout = () => async (dispatch) => {
+    //remove from localStorage
+    localStorage.removeItem('userInfo')
+    //we want to dispatch our user logout
+    dispatch(userLogout());
+}
+
