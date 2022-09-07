@@ -7,7 +7,8 @@
     import { useDispatch, useSelector } from 'react-redux'
     import Message from '../commponents/Message'
     import Loader from '../commponents/Loader'
-    import { getUserDetails } from '../actions/userActions'
+    import { getUserDetails, updateUserProfile } from '../actions/userActions'
+    import { userUpdateProfileReset } from '../reducers/userReducers'
     
     
     const ProfileScreen = ({ history }) => {
@@ -29,6 +30,10 @@
         //bring userLogin and put userInfo
         const userLogin = useSelector( state => state.userLogin)
         const { userInfo } = userLogin
+
+        //mesagge that says the that it's been update so we can get the success value from the update user profile state
+        const userUpdateProfile = useSelector( state => state.userUpdateProfile)
+        const { success } = userUpdateProfile
     
     
         //I want to redirect if we aew already logged in, I don't want to be able to come to the login screen if we're already logged in.
@@ -40,9 +45,11 @@
             if(!userInfo) {
                 history.push('/login')
             } else {
-
                 //if not user - check for the name
-                if(!user.name){
+                if(!user.name || success){
+
+                    //reset the updateUserProfiles state
+                    dispatch(userUpdateProfileReset());
 
                     //getUserDetails takes in an ID but in this case we're getting our profile
                     dispatch(getUserDetails('profile'))
@@ -53,7 +60,7 @@
             }
 
             //dependencies - history, userInfo(beacuse of that changes we want to redirect), redirect
-        }, [dispatch, user, history, userInfo])
+        }, [dispatch, user, history, userInfo, success])
     
         // submitHandler is a form so we're going to pass e and then call e.preventDefault so the page doesn't actually refresh
         const submitHandler = (e) => {
@@ -66,6 +73,7 @@
                 setMessage('Passwords do not match')
             } else {
                 // DISPATCH UPDATE PROFILE
+                dispatch(updateUserProfile({ id: user._id, name, email, password }))
             }
         }
     
@@ -74,6 +82,7 @@
         <h2>User Profile</h2>
             {message && <Message variant='danger'>{message}</Message>}
             {error && <Message variant='danger'>{error}</Message>}
+            {success && <Message variant='success'>Profile Updated</Message>}
             {loading && <Loader />}
             <Form onSubmit={submitHandler}>
                 <Form.Group controlId='name'>

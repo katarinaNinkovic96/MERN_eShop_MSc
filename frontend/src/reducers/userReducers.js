@@ -65,8 +65,9 @@ const userDetailsSlice = createSlice({
         user: {}
     },
     reducers: {
-        userDetailsRequest: (state = { user: {}} , action) => {
-            state.loading = true
+        userDetailsRequest: (state, action) => {
+            //...state
+            state.loading = true;
         },
         userDetailsSuccess: (state, action) => {
             state.loading = false;
@@ -81,3 +82,34 @@ const userDetailsSlice = createSlice({
 
 export const userDetailsReducer = userDetailsSlice.reducer;
 export const { userDetailsRequest, userDetailsSuccess, userDetailsFail } = userDetailsSlice.actions;
+
+
+
+//UpdateProfile
+const userUpdateProfileSlice = createSlice({
+    name: 'users',
+    initialState: {
+       
+    },
+    reducers: {
+        userUpdateProfileRequest: (state, action) => {
+            state.loading = true
+        },
+        userUpdateProfileSuccess: (state, action) => {
+            state.loading = false;
+            state.success = true;
+            state.userInfo = action.payload;
+        },
+        userUpdateProfileFail: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
+        userUpdateProfileReset: (state, action) => {
+            state.success = false;
+            //return {}
+        }
+    }
+});
+
+export const userUpdateProfileReducer = userUpdateProfileSlice.reducer;
+export const { userUpdateProfileRequest, userUpdateProfileSuccess, userUpdateProfileFail, userUpdateProfileReset } = userUpdateProfileSlice.actions;
