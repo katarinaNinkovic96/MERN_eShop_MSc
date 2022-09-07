@@ -112,5 +112,42 @@ const getUserProfile = asyncHandler(async (req, res) => {
  })
 
 
-export { authUser, registerUser, getUserProfile }
+// @desc    Update user profile
+// @route   PUT /api/users/profile
+// @access  Private - need to be logged in and they will need to send a token
+const updateUserProfile = asyncHandler(async (req, res) => {
+
+    //we are going to get the user by ID and we are going to have the logged in user
+    const user = await User.findById(req.user._id)
+
+    if (user) {
+        //we're going to set user.name we set to requast body.name or if that's not thete, 
+            //it's just going to be it's going to stay whatever the user name is 
+        user.name = req.body.name || user.name
+        user.email = req.body.email || user.email
+        //for the password we want to first check to see if a password was sent
+        if(req.body.password){
+            user.password = req.body.password
+        }
+
+        //we want to take that user and save
+        const updateUser = await user.save()
+
+        //
+        res.json({
+            _id: updateUser._id,
+            name: updateUser.name,
+            email: updateUser.email,
+            isAdmin: updateUser.isAdmin,
+            token: generateToken(updateUser._id)
+        })
+    } else {
+        res.status(404)
+        throw new Error ('User not found')
+    }
+ })
+
+
+
+export { authUser, registerUser, getUserProfile, updateUserProfile }
 
