@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { cartAddItem, cartRemoveItem } from '../reducers/cartReducers'
+import { cartAddItem, cartRemoveItem, cartSaveShippingAddress } from '../reducers/cartReducers'
 
 
 export const addToCart = (id, qty) => async (dispatch, getState) => {
@@ -29,3 +29,12 @@ export const removeFromCart = (id) => (dispatch, getState) => {
 
 //we import axios because when we add an item to the cart, we want to make a request to API products and
 //   then yhe ID to get the fields to get the data for that particular product toadd to our cart
+
+
+export const saveShippingAddress = (data) => (dispatch) => {
+    dispatch(cartSaveShippingAddress({
+        data
+    }));
+
+    localStorage.setItem(`shippingAddress`, JSON.stringify(data))
+}
