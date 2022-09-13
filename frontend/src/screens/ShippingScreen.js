@@ -4,6 +4,7 @@ import { Button, Form} from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import FormContainer from '../commponents/FormContainer'
 import { saveShippingAddress } from '../actions/cartActions'
+import ChechoutSteps from '../commponents/ChechoutSteps'
 
 
 //history - our props, we just want history beacuse we're goinng to want to, when we submit the form,
@@ -29,6 +30,7 @@ const ShippingScreen = ({ history }) => {
 
   return (
     <FormContainer>
+        <ChechoutSteps step1 step2 />
         <h1>Shipping</h1>
         <Form onSubmit={submitHandler}>
             <Form.Group controlId='address'>
