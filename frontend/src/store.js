@@ -34,3 +34,6 @@ const store = configureStore({
 });
 
 export default store;
+
+
+//store.js - load it from localStorage through our store.js ?????
