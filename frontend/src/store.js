@@ -15,10 +15,11 @@
 //   composeWithDevTools(applyMiddleware(...middleware))
 // );
 
-import {configureStore } from '@reduxjs/toolkit';
-import {productReducer, productDetailsReducer } from './reducers/productReducers';
-import { cartReducer } from './reducers/cartReducers'
-import { userLoginReducer, userRegisterReducer, userDetailsReducer, userUpdateProfileReducer } from './reducers/userReducers'
+import { configureStore } from '@reduxjs/toolkit';
+import { productReducer, productDetailsReducer } from './reducers/productReducers';
+import { cartReducer } from './reducers/cartReducers';
+import { userLoginReducer, userRegisterReducer, userDetailsReducer, userUpdateProfileReducer } from './reducers/userReducers';
+import { orderCreateReducer } from './reducers/orderReducers';
 
 const store = configureStore({
   reducer: {
@@ -28,12 +29,11 @@ const store = configureStore({
     userLogin: userLoginReducer,
     userRegister: userRegisterReducer,
     userDetails: userDetailsReducer,
-    userUpdateProfile: userUpdateProfileReducer
-
+    userUpdateProfile: userUpdateProfileReducer,
+    orderCreate: orderCreateReducer
   }
 });
 
 export default store;
-
 
 //store.js - load it from localStorage through our store.js ?????

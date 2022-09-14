@@ -4,18 +4,20 @@ const cartItemsFromStorage = localStorage.getItem('cartItems')
   ? JSON.parse(localStorage.getItem('cartItems'))
   : []
 
-
 const shippingAddressFromStorage = localStorage.getItem('shippingAddress')
   ? JSON.parse(localStorage.getItem('shippingAddress'))
   : {}
 
-
+const paymentMethodFormLocalStorage = localStorage.getItem('paymentMethod')
+  ? JSON.parse(localStorage.getItem('paymentMethod'))
+  : {}
 
 const cartSlice = createSlice({
     name: 'cart',
     initialState: {
         cartItems: cartItemsFromStorage,
-        shippingAddress: shippingAddressFromStorage
+        shippingAddress: shippingAddressFromStorage,
+        paymentMethod: paymentMethodFormLocalStorage,
     },
     reducers: {
         cartAddItem: (state, action) => {
@@ -23,40 +25,25 @@ const cartSlice = createSlice({
             const existItem = state.cartItems.find((x) => x.product === item.product)
 
             if (existItem) {
-                return {
-                    ...state,
-                    cartItems: state.cartItems.map((x) => 
-                        x.product === existItem.product ? item : x),
-                }
+                state.cartItems = state.cartItems.map((x) => x.product === existItem.product ? item : x);
             } else {
-                return{
-                    ...state,
-                    cartItems: [...state.cartItems, item]
-                }
+                state.cartItems = [...state.cartItems, item];
             }
         },
+
         cartRemoveItem: (state, action) => {
-            return {
-                ...state,
-                cartItems: state.cartItems.filter((x) => x.product !== action.payload.id)
-            }
+            state.cartItems = state.cartItems.filter((x) => x.product !== action.payload.id);
         },
 
         cartSaveShippingAddress: (state, action) => {
-            return {
-                ...state,
-                shippingAddress: action.payload
-            }
+            state.shippingAddress = action.payload
         },
 
         cartSavePaymentMethod: (state, action) => {
-            return {
-                ...state,
-                paymentMethod: action.payload
-            }
+            state.paymentMethod = action.payload;
         }
     }
 });
 
 export const cartReducer = cartSlice.reducer;
-export const { cartAddItem, cartRemoveItem, cartSaveShippingAddress, cartSavePaymentMethod} = cartSlice.actions;
+export const { cartAddItem, cartRemoveItem, cartSaveShippingAddress, cartSavePaymentMethod } = cartSlice.actions;
