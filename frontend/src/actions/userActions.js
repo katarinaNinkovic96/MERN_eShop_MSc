@@ -1,8 +1,9 @@
 import axios from 'axios'
 import { userLoginRequest, userLoginSuccess, userLoginFail, userLogout } from '../reducers/userReducers';
 import { userRegisterRequest, userRegisterSuccess, userRegisterFail } from '../reducers/userReducers';
-import { userDetailsRequest, userDetailsSuccess, userDetailsFail } from '../reducers/userReducers';
+import { userDetailsRequest, userDetailsSuccess, userDetailsFail, userDetailsReset } from '../reducers/userReducers';
 import { userUpdateProfileRequest, userUpdateProfileSuccess, userUpdateProfileFail } from '../reducers/userReducers';
+import { orderListMyReset } from '../reducers/orderReducers'
 
 
 //login
@@ -49,6 +50,8 @@ export const logout = () => async (dispatch) => {
     localStorage.removeItem('userInfo')
     //we want to dispatch our user logout
     dispatch(userLogout());
+    dispatch(userDetailsReset());
+    dispatch(orderListMyReset());
 }
 
 
