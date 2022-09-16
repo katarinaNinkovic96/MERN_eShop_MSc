@@ -1,14 +1,19 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import { PayPalButton } from 'react-paypal-button-v2'
 import { Row, Col, ListGroup, Image, Card} from 'react-bootstrap'
 //import useDispatch and useSelector so we can deal with our redux state
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../commponents/Message'
 import Loader from '../commponents/Loader'
 import { Link } from 'react-router-dom'
-import { getOrderDetails } from '../actions/orderActions'
+import { getOrderDetails, payOrder } from '../actions/orderActions'
+import { orderPayReset } from '../reducers/orderReducers'
 
 const OrderScreen = ({ match }) => {
-    const orderId = match.params.id
+    const orderId = match.params.id;
+
+    const [sdkReady, setSdkReady] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -16,17 +21,62 @@ const OrderScreen = ({ match }) => {
     const orderDetails = useSelector((state) => state.orderDetails);
     const { order, loading, error } = orderDetails;
 
+    const orderPay = useSelector((state) => state.orderPay);
+    //beacuse we have loading in orderDetails we just rename this loading: loadingPay
+    const { loading: loadingPay, success: successPay } = orderPay;
 
-
-    //check for the order and also make sure that the order ID matches the ID in the URL.
-    //if it does not, then dispatch getOrderDetails() to fetch the most recent order
     useEffect(() => {
-        if(!order || order._id !== orderId) {
-       dispatch(getOrderDetails(orderId))
+
+        //dynamically adding PayPal script
+        const addPayPalScript = async () => {
+            //we're going to fetch the clientID from the backend (from data point clientID) 
+            //route that we want to hit is going to '/api/config/paypal'
+            const { data: clientID } = await axios.get('/api/config/paypal');
+            // const paypalJsCode = await axios.get(`https://www.paypal.com/sdk/js?client-id=${clientID}`, {
+            //     'SameSite': 'None',
+            //     'Secure': 'true'
+            // });
+
+            //create new script - this is just vanilla javascript
+            const script = document.createElement('script');
+            script.type = 'text/javascript';
+            // script.text = paypalJsCode;
+
+            //<script defer src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID"></script>
+            script.src = `https://www.paypal.com/sdk/js?client-id=${clientID}`
+            script.async = true;
+            script.defer = true;
+
+            //piece of state for the when the SDK is ready(load)
+            //we set the true because we want this tells us if the script has been loaded and then underneath that,
+                //we want to add the script to the body (appendChild)
+            script.onload = () => {
+                setSdkReady(true);
+            }
+            document.body.appendChild(script);
         }
-    }, [dispatch, order, orderId])
+
+        //check for the order and also make sure that the order ID matches the ID in the URL.
+        //if it does not, then dispatch getOrderDetails() to fetch the most recent order
+        if (!order || successPay) {
+            //without orderPayReset when we Pay, it's just going to keep refreshing
+            dispatch(orderPayReset());
+            dispatch(getOrderDetails(orderId));
+        } else if (!order.isPaid) {
+            if (!window.paypal) {
+                addPayPalScript()
+            } else {
+                setSdkReady(true)
+            }
+        }
+    }, [dispatch, order, successPay, orderId])
+
+    //where we want to call that pay order action that we created
+    const successPaymentHandler = (paymentResult) => {
+        console.log(paymentResult);
+        dispatch(payOrder(orderId, paymentResult));
+    }
    
-    
 return loading ? <Loader /> : error ? <Message variant='danger'>{error}
     </Message> : <>
         <h1>Order {order._id}</h1>
@@ -132,6 +182,21 @@ return loading ? <Loader /> : error ? <Message variant='danger'>{error}
                                 <Col>${order.totalPrice}</Col>
                             </Row>
                         </ListGroup.Item>
+
+                        {!order.isPaid && (
+                            <ListGroup.Item>
+                                {/* if loadingPay is true, then let's show a loader  */}
+                                {loadingPay && <Loader />}
+                                {!sdkReady ? (
+                                    <Loader /> 
+                                ) : (
+                                    <PayPalButton 
+                                        amount={order.totalPrice} 
+                                        onSuccess={successPaymentHandler}
+                                    />
+                                )}
+                            </ListGroup.Item>
+                        )}
 
                     </ListGroup>
                 </Card>

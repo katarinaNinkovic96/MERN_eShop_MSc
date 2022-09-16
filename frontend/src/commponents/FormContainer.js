@@ -1,4 +1,4 @@
-import React, { Children } from 'react'
+import React from 'react'
 import { Container, Row, Col } from 'react-bootstrap'
 
 //we want to take in props, we're going to be structure children
