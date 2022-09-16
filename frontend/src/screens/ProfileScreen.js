@@ -2,13 +2,15 @@
     //so we do need useState also want useEffect
 
     import React, { useState, useEffect } from 'react'
-    import { Row, Col, Button, Form} from 'react-bootstrap'
+    import { Row, Col, Button, Form, Table} from 'react-bootstrap'
+    import { LinkContainer } from 'react-router-bootstrap'
     //import useDispatch and useSelector so we can deal with our redux state
     import { useDispatch, useSelector } from 'react-redux'
     import Message from '../commponents/Message'
     import Loader from '../commponents/Loader'
     import { getUserDetails, updateUserProfile } from '../actions/userActions'
     import { userUpdateProfileReset } from '../reducers/userReducers'
+    import { listMyOrders } from '../actions/orderActions'
     
     
     const ProfileScreen = ({ history }) => {
@@ -34,6 +36,10 @@
         //mesagge that says the that it's been update so we can get the success value from the update user profile state
         const userUpdateProfile = useSelector( state => state.userUpdateProfile)
         const { success } = userUpdateProfile
+
+        //we want to get the order list my state
+        const orderListMy = useSelector( state => state.orderListMy)
+        const { loading:loadingOrders, error:errorOrders, orders } = orderListMy
     
     
         //I want to redirect if we aew already logged in, I don't want to be able to come to the login screen if we're already logged in.
@@ -53,6 +59,7 @@
 
                     //getUserDetails takes in an ID but in this case we're getting our profile
                     dispatch(getUserDetails('profile'))
+                    dispatch(listMyOrders())    //we don't need to pass anything we just want to call it
                 } else {
                     setName(user.name)
                     setEmail(user.email)
@@ -137,6 +144,47 @@
 
         <Col md = {9}>
             <h2>My Orders</h2>
+            {loadingOrders ? <Loader /> : errorOrders ? <Message variant='danger'>{errorOrders}
+             </Message> : ( <Table striped bordered hover responsive className='table-sm'>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>DATE</th>
+                        <th>TOTAL</th>
+                        <th>PAID</th>
+                        <th>DELIVERED</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {orders.map((order) => (
+                        <tr key={order._id}>
+                            <td>{order._id}</td>
+                            <td>{order.createdAt.substring(0, 10)}</td>
+                            <td>{order.totalPrice}</td>
+                            <td>
+                                {order.isPaid ? ( order.paidAt.substring(0, 10)
+                            ) : (
+                                <i className='fas fa-times' style={{ color: 'red' }}></i>
+                                )}
+                            </td>
+                            <td>
+                                {order.isDelivered ? ( 
+                                    order.deliveredAt.substring(0, 10)
+                                ) : (
+                                <i className='fas fa-times' style={{color: 'red' }}></i>
+                                )}
+                            </td>
+                            <td>
+                                <LinkContainer to={`/order/${order._id}`}>
+                                    <Button className= 'btn-sm' variant='light'>Details</Button>
+                                </LinkContainer>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+             </Table>
+            )}
         </Col>
       </Row>
     }

@@ -76,12 +76,15 @@ const userDetailsSlice = createSlice({
         userDetailsFail: (state, action) => {
             state.loading = false;
             state.error = action.payload;
+        },
+        userDetailsReset: (state, action) => {
+            state.user = {};
         }
     }
 });
 
 export const userDetailsReducer = userDetailsSlice.reducer;
-export const { userDetailsRequest, userDetailsSuccess, userDetailsFail } = userDetailsSlice.actions;
+export const { userDetailsRequest, userDetailsSuccess, userDetailsFail, userDetailsReset } = userDetailsSlice.actions;
 
 
 

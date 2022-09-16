@@ -83,4 +83,17 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
     }
 });
 
-export { addOrderItems, getOrderByID, updateOrderToPaid }
+
+// @desc    Get logged in user orders
+// @route   GET /api/orders/myorders
+// @access  Private
+const getMyOrders = asyncHandler(async (req, res) => {
+    //we want to set orders to our model (Order model) and we want to use find (not find by index) because we're getting
+        //more than one, and pass in an object (want to find orders where the user is equal to the req.user._id - only the
+            //logged in user )
+    const orders = await Order.find({ user: req.user._id }) 
+    res.json(orders);
+    
+});
+
+export { addOrderItems, getOrderByID, updateOrderToPaid, getMyOrders }
