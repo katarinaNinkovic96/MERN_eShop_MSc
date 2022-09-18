@@ -1,21 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Hurricane&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rubik+Dirt&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Black+And+White+Picture&family=Rubik+Dirt&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Black+And+White+Picture&family=Roboto:ital@1&family=Rubik+Dirt&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+
 main{
     min-height: 80vh;
 }
 
 h3 {
     padding: 1rem 0;
+    text-transform: uppercase;
 }
 
 h1 {
-    font-size: 1.8rem;
+    font-size: 2rem;
     padding: 1rem 0;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-family: 'Rubik', cursive;
 }
 
 h2 {
     font-size: 1.4rem;
     padding: 0.5rem 0;
+    text-transform: uppercase;
 }
 
 .rating span{
     margin: 0.1rem;
 }
+
+.btn-primary{
+    background-color: #343A40 !important
+}
+
+ a {
+    color: black;
+    font-family: 'Roboto', sans-serif;
+} 
+
+a:hover{
+    color: #5F6769
+}
+
+.navbar-brand{
+    font-family: 'Orbitron', sans-serif;
+
+}
+
+
+.navbar {
+    font-family: 'Roboto', sans-serif;
+}
+

@@ -13,37 +13,45 @@ import { orderPayReset } from '../reducers/orderReducers'
 const OrderScreen = ({ match }) => {
     const orderId = match.params.id;
 
-    const [sdkReady, setSdkReady] = useState(false);
-
+    // w/ Bug (zoid destroy)
+    // const [sdkReady, setSdkReady] = useState(false);
+    
+    // wo/ Bug (zoid destroy)
+    const [sdkReadyState, setSdkReadyState] = useState({ loading: false, loaded: false});
+    
     const dispatch = useDispatch();
-
-
+    
     const orderDetails = useSelector((state) => state.orderDetails);
     const { order, loading, error } = orderDetails;
-
+    
     const orderPay = useSelector((state) => state.orderPay);
     //beacuse we have loading in orderDetails we just rename this loading: loadingPay
     const { loading: loadingPay, success: successPay } = orderPay;
+    
+    const [payPalId, setPayPalId] = useState();
+    useEffect(() => {
+        async function fetchData() {
+            //we're going to fetch the clientID from the backend (from data point clientID) 
+            //route that we want to hit is going to '/api/config/paypal'
+            const res = await axios.get('/api/config/paypal');
+            setPayPalId(res['data']);
+        }
+        fetchData();
+    }, []);
 
     useEffect(() => {
 
         //dynamically adding PayPal script
         const addPayPalScript = async () => {
-            //we're going to fetch the clientID from the backend (from data point clientID) 
-            //route that we want to hit is going to '/api/config/paypal'
-            const { data: clientID } = await axios.get('/api/config/paypal');
-            // const paypalJsCode = await axios.get(`https://www.paypal.com/sdk/js?client-id=${clientID}`, {
-            //     'SameSite': 'None',
-            //     'Secure': 'true'
-            // });
+            setSdkReadyState({ loading: true, loaded: false });
 
             //create new script - this is just vanilla javascript
             const script = document.createElement('script');
             script.type = 'text/javascript';
-            // script.text = paypalJsCode;
 
             //<script defer src="https://www.paypal.com/sdk/js?client-id=YOUR_CLIENT_ID"></script>
-            script.src = `https://www.paypal.com/sdk/js?client-id=${clientID}`
+            script.src = `https://www.paypal.com/sdk/js?client-id=${payPalId}&currency=EUR&components=buttons`;
+            script.id = "paypal-script";
             script.async = true;
             script.defer = true;
 
@@ -51,7 +59,7 @@ const OrderScreen = ({ match }) => {
             //we set the true because we want this tells us if the script has been loaded and then underneath that,
                 //we want to add the script to the body (appendChild)
             script.onload = () => {
-                setSdkReady(true);
+                setSdkReadyState({loading: false, loaded: true});
             }
             document.body.appendChild(script);
         }
@@ -63,13 +71,11 @@ const OrderScreen = ({ match }) => {
             dispatch(orderPayReset());
             dispatch(getOrderDetails(orderId));
         } else if (!order.isPaid) {
-            if (!window.paypal) {
+            if (!sdkReadyState.loading && !sdkReadyState.loaded) {
                 addPayPalScript()
-            } else {
-                setSdkReady(true)
             }
         }
-    }, [dispatch, order, successPay, orderId])
+    }, [dispatch, order, successPay, orderId, payPalId, sdkReadyState])
 
     //where we want to call that pay order action that we created
     const successPaymentHandler = (paymentResult) => {
@@ -137,7 +143,7 @@ return loading ? <Loader /> : error ? <Message variant='danger'>{error}
                                                 </Link>
                                             </Col>
                                             <Col md={4}>
-                                                {item.qty} x ${item.price} = ${item.qty * item.price}
+                                                {item.qty} x {item.price}€ = {item.qty * item.price}€
                                             </Col>
                                         </Row>
                                     </ListGroup.Item>
@@ -158,28 +164,28 @@ return loading ? <Loader /> : error ? <Message variant='danger'>{error}
                         <ListGroup.Item>
                             <Row>
                                 <Col>Items</Col>
-                                <Col>${order.itemsPrice}</Col>
+                                <Col>{order.itemsPrice}€</Col>
                             </Row>
                         </ListGroup.Item>
 
                         <ListGroup.Item>
                             <Row>
                                 <Col>Shipping</Col>
-                                <Col>${order.shippingPrice}</Col>
+                                <Col>{order.shippingPrice}€</Col>
                             </Row>
                         </ListGroup.Item>
 
                         <ListGroup.Item>
                             <Row>
                                 <Col>Tax</Col>
-                                <Col>${order.taxPrice}</Col>
+                                <Col>{order.taxPrice}€</Col>
                             </Row>
                         </ListGroup.Item>
 
                         <ListGroup.Item>
                             <Row>
                                 <Col>Total</Col>
-                                <Col>${order.totalPrice}</Col>
+                                <Col>{order.totalPrice}€</Col>
                             </Row>
                         </ListGroup.Item>
 
@@ -187,11 +193,12 @@ return loading ? <Loader /> : error ? <Message variant='danger'>{error}
                             <ListGroup.Item>
                                 {/* if loadingPay is true, then let's show a loader  */}
                                 {loadingPay && <Loader />}
-                                {!sdkReady ? (
+                                {sdkReadyState.loading ? (
                                     <Loader /> 
                                 ) : (
-                                    <PayPalButton 
-                                        amount={order.totalPrice} 
+                                    <PayPalButton
+                                        amount={order.totalPrice}
+                                        currency="EUR"
                                         onSuccess={successPaymentHandler}
                                     />
                                 )}
