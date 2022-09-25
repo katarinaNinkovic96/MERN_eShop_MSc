@@ -148,6 +148,16 @@ const updateUserProfile = asyncHandler(async (req, res) => {
  })
 
 
+// @desc    Get all users
+// @route   GET /api/users
+// @access  Private/Admin --not only is it protected and you have to log in, but you also have to be an admin
+const getUsers = asyncHandler(async (req, res) => {
 
-export { authUser, registerUser, getUserProfile, updateUserProfile }
+    //empty object because we want to get all users
+    const users = await User.find({})
+    res.json(users)   
+ })
+
+
+export { authUser, registerUser, getUserProfile, updateUserProfile, getUsers }
 
