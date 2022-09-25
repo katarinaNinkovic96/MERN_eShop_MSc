@@ -159,5 +159,71 @@ const getUsers = asyncHandler(async (req, res) => {
  })
 
 
-export { authUser, registerUser, getUserProfile, updateUserProfile, getUsers }
+// @desc    Delete user
+// @route   DELETE /api/users/:id
+// @access  Private/Admin
+const deleteUser = asyncHandler(async (req, res) => {
+
+    const user = await User.findById(req.params.id);
+
+    if(user) {
+        await user.remove();
+        res.json({ message: 'User removed '});
+
+    } else {
+        res.status(404);
+        throw new Error ('User not found');
+    }
+ })
+
+
+// @desc    Get user by ID
+// @route   GET /api/users/:id
+// @access  Private/Admin
+const getUserById = asyncHandler(async (req, res) => {
+
+    //select - we want to send user back without password
+    const user = await User.findById(req.params.id).select('-passwprd');
+
+    if(user) {
+        res.json(user)
+    } else {
+        res.status(404);
+        throw new Error ('User not found');
+    }
+})
+
+
+// @desc    Update user
+// @route   PUT /api/users/:id
+// @access  Private/Admin
+const updateUser = asyncHandler(async (req, res) => {
+
+    const user = await User.findById(req.params.id)
+
+    if (user) {
+        //we're going to set user.name we set to requast body.name or if that's not thete,
+            //it's just going to be it's going to stay whatever the user name is
+        user.name = req.body.name || user.name
+        user.email = req.body.email || user.email
+        user.isAdmin = req.body.isAdmin
+        //user.isAdmin = req.body.isAdmin || user.isAdmin
+
+        //we want to take that user and save
+        const updateUser = await user.save()
+
+        res.json({
+            _id: updateUser._id,
+            name: updateUser.name,
+            email: updateUser.email,
+            isAdmin: updateUser.isAdmin
+        })
+    } else {
+        res.status(404)
+        throw new Error ('User not found')
+    }
+ })
+
+
+export { authUser, registerUser, getUserProfile, updateUserProfile, getUsers, deleteUser, getUserById, updateUser }
 

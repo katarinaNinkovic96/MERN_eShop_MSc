@@ -3,6 +3,9 @@ import { userLoginRequest, userLoginSuccess, userLoginFail, userLogout } from '.
 import { userRegisterRequest, userRegisterSuccess, userRegisterFail } from '../reducers/userReducers';
 import { userDetailsRequest, userDetailsSuccess, userDetailsFail, userDetailsReset } from '../reducers/userReducers';
 import { userUpdateProfileRequest, userUpdateProfileSuccess, userUpdateProfileFail } from '../reducers/userReducers';
+import { userListRequest, userListSuccess, userListFail, userListReset } from '../reducers/userReducers';
+import { userDeleteRequest, userDeleteSuccess, userDeleteFail } from '../reducers/userReducers';
+import { userUpdateRequest, userUpdateSuccess, userUpdateFail } from '../reducers/userReducers';
 import { orderListMyReset } from '../reducers/orderReducers'
 
 
@@ -51,6 +54,7 @@ export const logout = () => async (dispatch) => {
     //we want to dispatch our user logout
     dispatch(userLogout());
     dispatch(userDetailsReset());
+    dispatch(userListReset());
     dispatch(orderListMyReset());
 }
 
@@ -185,6 +189,121 @@ export const updateUserProfile = ( user ) => async (dispatch, getState) => {
 
     } catch (error) {
         dispatch(userUpdateProfileFail(error.response && error.response.data.message ? error.response.data.message : error.message))
+    }
+}
+
+
+//List users
+//it's not going to take anything in
+export const listUsers = () => async (dispatch, getState) => {
+    try {
+
+        //dispatch - the request
+        dispatch(userListRequest());
+
+        //destruction from getState which is a function
+        //we want to get the user login, but then we want to destruction another level and we want to get userInfo
+            //which is in user login
+        //that should give us access to the logged in users object
+        //we get userInfo
+        const {userLogin: { userInfo } } = getState()
+
+        //this is also where we will pass the token for protected routes, will set the authorization here for the token
+        //we want application json, we're sending data
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        }
+
+        //we will make our requests
+        //get request
+        const { data } = await axios.get( '/api/users', config);
+
+
+        //we're going to pass the data, get in as the payload
+        dispatch(userListSuccess(data));
+
+    } catch (error) {
+        dispatch(userListFail(error.response && error.response.data.message ? error.response.data.message : error.message))
+    }
+}
+
+
+//Delete user
+export const deleteUser = (id) => async (dispatch, getState) => {
+    try {
+
+        //dispatch - the request
+        dispatch(userDeleteRequest());
+
+        //destruction from getState which is a function
+        //we want to get the user login, but then we want to destruction another level and we want to get userInfo
+            //which is in user login
+        //that should give us access to the logged in users object
+        //we get userInfo
+        const {userLogin: { userInfo } } = getState()
+
+        //this is also where we will pass the token for protected routes, will set the authorization here for the token
+        //we want application json, we're sending data
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        }
+
+        //we will make our requests
+        //delete request
+        await axios.delete( `/api/users/${id}`, config);
+
+        //we're going to pass the data, get in as the payload
+        dispatch(userDeleteSuccess());
+
+    } catch (error) {
+        dispatch(userDeleteFail(error.response && error.response.data.message ? error.response.data.message : error.message))
+    }
+
+    // update user list
+    dispatch(listUsers());
+}
+
+
+
+//Update user
+export const updateUser = (user) => async (dispatch, getState) => {
+    try {
+
+        //dispatch - the request
+        dispatch(userUpdateRequest());
+
+        //destruction from getState which is a function
+        //we want to get the user login, but then we want to destruction another level and we want to get userInfo
+            //which is in user login
+        //that should give us access to the logged in users object
+        //we get userInfo
+        const {userLogin: { userInfo } } = getState()
+
+        //this is also where we will pass the token for protected routes, will set the authorization here for the token
+        //we want application json, we're sending data
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        }
+
+        //we will make our requests
+        //delete request
+        const { data } = await axios.put( `/api/users/${user._id}`, user, config);
+
+
+        //we're going to pass the data, get in as the payload
+        dispatch(userUpdateSuccess());
+
+        dispatch(userDetailsSuccess(data));
+
+    } catch (error) {
+        dispatch(userUpdateFail(error.response && error.response.data.message ? error.response.data.message : error.message))
     }
 }
 

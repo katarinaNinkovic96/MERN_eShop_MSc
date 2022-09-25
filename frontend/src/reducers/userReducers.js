@@ -116,3 +116,85 @@ const userUpdateProfileSlice = createSlice({
 
 export const userUpdateProfileReducer = userUpdateProfileSlice.reducer;
 export const { userUpdateProfileRequest, userUpdateProfileSuccess, userUpdateProfileFail, userUpdateProfileReset } = userUpdateProfileSlice.actions;
+
+
+//List users
+const userListSlice = createSlice({
+    name: 'users',
+    initialState: {
+       users: []
+    },
+    reducers: {
+        userListRequest: (state, action) => {
+            state.loading = true
+        },
+        userListSuccess: (state, action) => {
+            state.loading = false;
+            state.users = action.payload;
+        },
+        userListFail: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
+        userListReset: (state, action) => {
+            state.success = false;
+        }
+    }
+});
+
+export const userListReducer = userListSlice.reducer;
+export const { userListRequest, userListSuccess, userListFail, userListReset } = userListSlice.actions;
+
+
+//Delete user
+const userDeleteSlice = createSlice({
+    name: 'users',
+    initialState: {
+      
+    },
+    reducers: {
+        userDeleteRequest: (state, action) => {
+            state.loading = true
+        },
+        userDeleteSuccess: (state, action) => {
+            state.loading = false;
+            state.success = true;
+        },
+        userDeleteFail: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        }
+    }
+});
+
+export const userDeleteReducer = userDeleteSlice.reducer;
+export const { userDeleteRequest, userDeleteSuccess, userDeleteFail } = userDeleteSlice.actions;
+
+
+
+//Update user
+const userUpdateSlice = createSlice({
+    name: 'users',
+    initialState: {
+      user: {}
+    },
+    reducers: {
+        userUpdateRequest: (state, action) => {
+            state.loading = true
+        },
+        userUpdateSuccess: (state, action) => {
+            state.loading = false;
+            state.success = true;
+        },
+        userUpdateFail: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
+        userUpdateReset: (state, action) => {
+            state.success = false;
+        }
+    }
+});
+
+export const userUpdateReducer = userUpdateSlice.reducer;
+export const { userUpdateRequest, userUpdateSuccess, userUpdateFail, userUpdateReset } = userUpdateSlice.actions;
