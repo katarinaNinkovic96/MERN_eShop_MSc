@@ -67,3 +67,29 @@ const productDetailsSlice = createSlice({
 
 export const productDetailsReducer = productDetailsSlice.reducer;
 export const { productDetailsRequest, productDetailsSuccess, productDetailsFail } = productDetailsSlice.actions;
+
+
+//delete product
+//again import old product from data =>   npm run data: import
+const productDeleteSlice = createSlice({
+    name: 'products',
+    initialState: {
+        
+    },
+    reducers: {
+        productDeleteRequest: (state, action) => {
+            state.loading = true;
+        },
+        productDeleteSuccess: (state, action) => {
+            state.loading = false;
+            state.success = true;
+        },
+        productDeleteFail: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        }
+    }
+});
+
+export const productDeleteReducer = productDeleteSlice.reducer;
+export const { productDeleteRequest, productDeleteSuccess, productDeleteFail } = productDeleteSlice.actions;
