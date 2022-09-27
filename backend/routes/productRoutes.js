@@ -1,6 +1,6 @@
 import express from 'express'
 const router = express.Router()
-import { getProductById, getProducts, deleteProduct } from '../controllers/productController.js'
+import { getProductById, getProducts, deleteProduct, createProduct, updateProduct } from '../controllers/productController.js'
 import { protect, admin } from '../middleware/authMiddleware.js'
 
 //all the functionality will go in the controller
@@ -8,12 +8,20 @@ import { protect, admin } from '../middleware/authMiddleware.js'
 
 //router.get('/', getProducts) - it can be like this, but we will work:
 //route.route and for / will handle a 'get request' and call getProducts
-router.route('/').get(getProducts);
+router
+    .route('/')
+    .get(getProducts)
+    .post(protect, admin, createProduct);
 
 
 
 //same for ID
 //route.get('/:id', getProductById) - it can be like this, but we will work:
-router.route('/:id').get(getProductById).delete(protect, admin, deleteProduct);
+router
+    .route('/:id')
+    .get(getProductById)
+    .delete(protect, admin, deleteProduct)
+    .put(protect, admin, updateProduct);
 
 export default router
+

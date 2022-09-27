@@ -93,3 +93,72 @@ const productDeleteSlice = createSlice({
 
 export const productDeleteReducer = productDeleteSlice.reducer;
 export const { productDeleteRequest, productDeleteSuccess, productDeleteFail } = productDeleteSlice.actions;
+
+
+//create product
+const productCreateSlice = createSlice({
+    name: 'products',
+    initialState: {
+        
+    },
+    reducers: {
+        productCreateRequest: (state, action) => {
+            state.loading = true;
+        },
+        productCreateSuccess: (state, action) => {
+            state.loading = false;
+            state.success = true;
+            state.product = action.payload;
+        },
+        productCreateFail: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
+        productCreateReset: (state, action) => {
+            state.success = false;
+        }
+    }
+});
+
+export const productCreateReducer = productCreateSlice.reducer;
+export const {
+    productCreateRequest,
+    productCreateSuccess,
+    productCreateFail,
+    productCreateReset
+} = productCreateSlice.actions;
+
+
+
+//update product
+const productUpdateSlice = createSlice({
+    name: 'products',
+    initialState: {
+        product: {}
+    },
+    reducers: {
+        productUpdateRequest: (state, action) => {
+            state.loading = true;
+        },
+        productUpdateSuccess: (state, action) => {
+            state.loading = false;
+            state.success = true;
+            state.product = action.payload;
+        },
+        productUpdateFail: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
+        productUpdateReset: (state, action) => {
+            state.product = {};
+        }
+    }
+});
+
+export const productUpdateReducer = productUpdateSlice.reducer;
+export const {
+    productUpdateRequest,
+    productUpdateSuccess,
+    productUpdateFail,
+    productUpdateReset
+} = productUpdateSlice.actions;
