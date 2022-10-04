@@ -9,13 +9,11 @@
     import Message from '../commponents/Message'
     import Loader from '../commponents/Loader'
     import FormContainer from '../commponents/FormContainer'
-    import { listProductDetails, updateProduct } from '../actions/productActions'
-    import { productUpdateReset } from '../reducers/productReducers'
+    import { createProduct } from '../actions/productActions'
+    import { productCreateReset } from '../reducers/productReducers'
     
     
-    const ProductEditScreen = ({ match, history }) => {
-
-        const productId = match.params.id;
+    const ProductCreateScreen = ({ history }) => {
 
         //set some component level state, so basicilly for out fields and we're going to have just name, email...
         //set email and the function to manipulate that piece of state will be setEmail
@@ -29,36 +27,19 @@
         const [ uploading, setUploading ] = useState(false)
     
         const dispatch = useDispatch()
-    
-        //we get from our state the userDetails, part of our state
+
         const productDetails = useSelector( state => state.productDetails)
-        const { loading, error, product } = productDetails
-
-
-        const productUpdate = useSelector( state => state.productUpdate)
-        const { loading:loadingUpdate, error:errorUpdate, success:successUpdate } = productUpdate
-
+        const { loading, error } = productDetails
+    
+        const productCreate = useSelector( state => state.productCreate)
+        const { loading: loadingCreate, error:errorCreate, success:successCreate } = productCreate
 
         useEffect(() => {
-            if (successUpdate) {
-                console.log("success update from product edit screen")
-                dispatch(productUpdateReset());
-                history.push('/admin/productlist');
-            } else {
-                console.log("success update from product edit screen")
-                if(!product.name || product._id !== productId) {
-                    dispatch(listProductDetails(productId));   
-                } else {
-                    setName(product.name);
-                    setPrice(product.price);
-                    setImage(product.image);
-                    setBrand(product.brand);
-                    setCategory(product.category);
-                    setCountInStock(product.countInStock);
-                    setDescription(product.description);
-                }
-            }     
-        }, [dispatch, history, productId, product, successUpdate ])
+            if (successCreate) {
+                dispatch(productCreateReset());
+                history.push("/admin/productlist");
+            }
+        }, [dispatch, history, successCreate]);
 
         //e - we can access to the files
         const uploadFileHandler = async (e) => {
@@ -88,7 +69,7 @@
         // submitHandler is a form so we're going to pass e and then call e.preventDefault so the page doesn't actually refresh
         const submitHandler = (e) => {
             e.preventDefault()
-            dispatch(updateProduct({_id: productId, name, price, image, brand, category, countInStock, description }))
+            dispatch(createProduct({name, price, image, brand, category, countInStock, description }))
         }
     
       return (
@@ -98,9 +79,9 @@
             </Link>
 
             <FormContainer>
-                <h1>Edit Product</h1>
-                {loadingUpdate && <Loader />}
-                {errorUpdate && <Message variant='danger'>{errorUpdate}</Message>}
+                <h1>Create Product</h1>
+                {loadingCreate && <Loader />}
+                {errorCreate && <Message variant='danger'>{errorCreate}</Message>}
                 {loading ? ( 
                 <Loader />
                 ) : error ? (
@@ -196,7 +177,7 @@
                         </Form.Group>
         
                         <Button type='submit' variant='primary'>
-                            Update
+                            Create
                         </Button>
                     </Form>
                 )}
@@ -205,6 +186,6 @@
       );
     }
     
-    export default ProductEditScreen
+    export default ProductCreateScreen
     
     

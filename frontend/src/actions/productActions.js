@@ -74,7 +74,7 @@ export const deleteProduct = (id) => async (dispatch, getState) => {
 
 
 //create product
-export const createProduct = () => async (dispatch, getState) => {
+export const createProduct = (product) => async (dispatch, getState) => {
     try {
 
         //dispatch - the request
@@ -87,10 +87,9 @@ export const createProduct = () => async (dispatch, getState) => {
         //we get userInfo
         const {userLogin: { userInfo } } = getState()
 
-       
-        //this is also where we will pass the token for protected routes, will set the authorization here for the token
         const config = {
             headers: {
+                //'Content-Type': 'application/json',
                 Authorization: `Bearer ${userInfo.token}`
             }
         }
@@ -98,7 +97,7 @@ export const createProduct = () => async (dispatch, getState) => {
         //we will make our requests
         //post request
         //second argument {} - because we making post req but we're not actually sending any data here.
-        const { data } = await axios.post( `/api/products`, {}, config);
+        const { data } = await axios.post( `/api/products`, product,  config);
 
 
         //we're going to pass the data, get in as the payload

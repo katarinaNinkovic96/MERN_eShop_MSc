@@ -151,6 +151,7 @@ const productUpdateSlice = createSlice({
         },
         productUpdateReset: (state, action) => {
             state.product = {};
+            state.success = false;
         }
     }
 });

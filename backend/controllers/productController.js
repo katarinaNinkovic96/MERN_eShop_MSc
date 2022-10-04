@@ -44,25 +44,40 @@ const deleteProduct = asyncHandler(async (req, res) => {
 // @route   POST /api/products
 // @access  Private/Admin
 const createProduct = asyncHandler(async (req, res) => {
-    const product = new Product({
-        name: 'Sample name',
-        price: 0,
-        //logged in user
-        user: req.user._id,
-        image: '/images/sample.jpg',
-        brand: 'Sample brand',
-        category: 'Sample category',
-        countInStock: 0,
-        numReviews: 0,
-        description: 'Sample description'
-    })
+    const {
+        name,
+        price,
+        image,
+        brand,
+        category,
+        countInStock,
+        description
+    } = req.body
 
-    //new constant - product save in database
+    const productExists = await Product.findById(req.params.id)
+
+    if(productExists) {
+        res.status(400)
+        throw new Error('Product already exists')
+    }
+
+    const product  = new Product({
+        name,
+        price,
+        // logged in user
+        user: req.user._id,
+        image,
+        brand,
+        category,
+        countInStock,
+        description,
+        numReviews: 0
+    });
+
+    // new constant - product saved in database
     const createdProduct = await product.save();
     res.status(201).json(createdProduct);
-})
-
-
+ })
 
 // @desc    Update a product
 // @route   PUT /api/products/:id

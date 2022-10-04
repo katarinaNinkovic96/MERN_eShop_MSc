@@ -5,8 +5,7 @@ import { Table, Button, Row, Col } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../commponents/Message'
 import Loader from '../commponents/Loader'
-import { listProducts, deleteProduct, createProduct } from '../actions/productActions'
-import { productCreateReset } from '../reducers/productReducers'
+import { listProducts, deleteProduct } from '../actions/productActions'
 
 
 const ProductListScreen = ({ history, match} ) => {
@@ -30,17 +29,13 @@ const ProductListScreen = ({ history, match} ) => {
 
     //as soon as useEffect runs, we want to dispatch the productCreateReset
     useEffect(() => {
-        dispatch(productCreateReset());
+        //dispatch(productCreateReset());
 
         if (!userInfo.isAdmin) {
             history.push('/login');
         }
 
-        if (successCreate) {
-            history.push(`/admin/product/${createdProduct._id}/edit`)
-        } else {
-            dispatch(listProducts())
-        }
+        dispatch(listProducts())
 
     }, [dispatch, history, userInfo, successCreate, createdProduct])
 
@@ -49,10 +44,11 @@ const ProductListScreen = ({ history, match} ) => {
             dispatch(deleteProduct(id))
         }
     }
+    
 
     const createProductHandler = () => {
         //create product
-        dispatch(createProduct());
+        history.push('/admin/product/create');
     }
 
   return (
