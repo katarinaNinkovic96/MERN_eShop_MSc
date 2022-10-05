@@ -109,3 +109,28 @@ const orderListMySlice = createSlice({
 
 export const orderListMyReducer = orderListMySlice.reducer;
 export const { orderListMyRequest, orderListMySuccess, orderListMyFail, orderListMyReset } = orderListMySlice.actions;
+
+
+//list of all order
+const orderListSlice = createSlice({
+    name: 'order',
+    initialState: {
+        orders: []
+    },
+    reducers: {
+        orderListRequest: (state, action) => {
+            state.loading = true;
+        },
+        orderListSuccess: (state, action) => {
+            state.loading = false;
+            state.orders = action.payload;
+        },
+        orderListFail: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        }
+    }
+});
+
+export const orderListReducer = orderListSlice.reducer;
+export const { orderListRequest, orderListSuccess, orderListFail } = orderListSlice.actions;

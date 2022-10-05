@@ -18,6 +18,7 @@ import UserEditScreen from './screens/UserEditScreen';
 import ProductListScreen from './screens/ProductListScreen';
 import ProductEditScreen from './screens/ProductEditScreen';
 import ProductCreateScreen from './screens/ProductCreateScreen';
+import OrderListScreen from './screens/OrderListScreen';
 
 const App = () => {
   return (
@@ -39,6 +40,7 @@ const App = () => {
           <Route path='/admin/productlist' component={ProductListScreen} />
           <Route path='/admin/product/:id/edit' component={ProductEditScreen} />
           <Route path='/admin/product/create' component={ProductCreateScreen} />
+          <Route path='/admin/orderlist' component={OrderListScreen} />
           <Route path='/' component={HomeScreen} exact />
         </Container>
       </main>
@@ -51,3 +53,4 @@ export default App;
 
 ///cart/:id?  --- ? because id is going to be optional so we can puut a question mark to make this optional, because
 //      when we just go to the cart link, it is not going to have any ID in it
+
