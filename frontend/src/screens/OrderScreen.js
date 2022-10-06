@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { PayPalButton } from 'react-paypal-button-v2'
-import { Row, Col, ListGroup, Image, Card} from 'react-bootstrap'
+import { Row, Col, ListGroup, Image, Card, Button} from 'react-bootstrap'
 //import useDispatch and useSelector so we can deal with our redux state
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../commponents/Message'
 import Loader from '../commponents/Loader'
 import { Link } from 'react-router-dom'
-import { getOrderDetails, payOrder } from '../actions/orderActions'
-import { orderPayReset } from '../reducers/orderReducers'
+import { getOrderDetails, payOrder, deliverOrder } from '../actions/orderActions'
+import { orderPayReset, orderDeliverReset } from '../reducers/orderReducers'
 
-const OrderScreen = ({ match }) => {
+const OrderScreen = ({ match, history }) => {
     const orderId = match.params.id;
 
     // w/ Bug (zoid destroy)
@@ -27,8 +27,17 @@ const OrderScreen = ({ match }) => {
     const orderPay = useSelector((state) => state.orderPay);
     //beacuse we have loading in orderDetails we just rename this loading: loadingPay
     const { loading: loadingPay, success: successPay } = orderPay;
+
+    const orderDeliver = useSelector((state) => state.orderDeliver);
+    //beacuse we have loading in orderDetails we just rename this loading: loadingPay
+    const { loading: loadingDeliver, success: successDeliver } = orderDeliver;
+
+    const userLogin = useSelector((state) => state.userLogin);
+    const { userInfo } = userLogin;
+
     
     const [payPalId, setPayPalId] = useState();
+
     useEffect(() => {
         async function fetchData() {
             //we're going to fetch the clientID from the backend (from data point clientID) 
@@ -40,6 +49,10 @@ const OrderScreen = ({ match }) => {
     }, []);
 
     useEffect(() => {
+
+        if(!userInfo) {
+            history.push('/login');
+        }
 
         //dynamically adding PayPal script
         const addPayPalScript = async () => {
@@ -66,21 +79,26 @@ const OrderScreen = ({ match }) => {
 
         //check for the order and also make sure that the order ID matches the ID in the URL.
         //if it does not, then dispatch getOrderDetails() to fetch the most recent order
-        if (!order || successPay) {
+        if (!order || successPay || successDeliver) {
             //without orderPayReset when we Pay, it's just going to keep refreshing
             dispatch(orderPayReset());
+            dispatch(orderDeliverReset());
             dispatch(getOrderDetails(orderId));
         } else if (!order.isPaid) {
             if (!sdkReadyState.loading && !sdkReadyState.loaded) {
                 addPayPalScript()
             }
         }
-    }, [dispatch, order, successPay, orderId, payPalId, sdkReadyState])
+    }, [dispatch, order, successPay, successDeliver, orderId, payPalId, sdkReadyState, userInfo, history])
 
     //where we want to call that pay order action that we created
     const successPaymentHandler = (paymentResult) => {
         console.log(paymentResult);
         dispatch(payOrder(orderId, paymentResult));
+    }
+
+    const deliverHandler = () => {
+        dispatch(deliverOrder(order));
     }
    
 return loading ? <Loader /> : error ? <Message variant='danger'>{error}
@@ -202,6 +220,19 @@ return loading ? <Loader /> : error ? <Message variant='danger'>{error}
                                         onSuccess={successPaymentHandler}
                                     />
                                 )}
+                            </ListGroup.Item>
+                        )}
+
+                        {loadingDeliver && <Loader />}
+                        {userInfo && userInfo.isAdmin && order.isPaid && !order.isDelivered && (
+                            <ListGroup.Item>
+                                <Button
+                                    type='button'
+                                    className='btn btn-block'
+                                    onClick={deliverHandler}
+                                >
+                                    Mark As Delivered
+                                </Button>
                             </ListGroup.Item>
                         )}
 

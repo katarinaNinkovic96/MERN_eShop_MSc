@@ -83,6 +83,36 @@ const orderPaySlice = createSlice({
 export const orderPayReducer = orderPaySlice.reducer;
 export const { orderPayRequest, orderPaySuccess, orderPayFail, orderPayReset } = orderPaySlice.actions;
 
+
+//order deliver
+const orderDeliverSlice = createSlice({
+    name: 'order',
+    initialState: {
+    },
+    reducers: {
+        orderDeliverRequest: (state, action) => {
+            state.loading = true;
+        },
+        orderDeliverSuccess: (state, action) => {
+            state.loading = false;
+            state.success = true;
+        },
+        orderDeliverFail: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
+        orderDeliverReset: (state, action) => {
+            state.success = false;
+            //return {}
+        }
+    }
+});
+
+export const orderDeliverReducer = orderDeliverSlice.reducer;
+export const { orderDeliverRequest, orderDeliverSuccess, orderDeliverFail, orderDeliverReset } = orderDeliverSlice.actions;
+
+
+
 //list of my order
 const orderListMySlice = createSlice({
     name: 'order',
