@@ -5,7 +5,23 @@ import Product from '../models/productModel.js'
 // @route   GET /api/products
 // @access  Public
 const getProducts = asyncHandler(async (req, res) => {
-    const products = await Product.find({})
+
+    //with query we get query string - if ?sfa in link with query we get this
+    //if there we match the keyword to the name of the product
+    //we use regex because we dont want to search exact name like product in searc box
+    //name = req.query.keyword - exactly name search like product
+    //options i which means is case insensitive
+    //if don't exist {}
+    const keyword = req.query.keyword
+     ? {
+            name: {
+                $regex: req.query.keyword,
+                $options: 'i'
+            }
+        }
+    : {}
+
+    const products = await Product.find({ ...keyword })
     
     res.json(products)
 })

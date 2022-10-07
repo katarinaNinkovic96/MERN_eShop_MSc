@@ -7,16 +7,19 @@ import Loader from '../commponents/Loader'
 import { listProducts } from '../actions/productActions'
 
 
-const HomeScreen = () => {
+const HomeScreen = ({ match }) => {
+
+  const keyword = match.params.keyword
+
   const productList = useSelector(state => state.productList);
   const dispatch = useDispatch()
 
   const { loading, error, products } = productList;
 
   useEffect(() =>{
-    dispatch(listProducts())
+    dispatch(listProducts(keyword))
 
-  }, [dispatch]);
+  }, [dispatch, keyword]);
 
   return (
     <>

@@ -6,11 +6,11 @@ import { productCreateRequest, productCreateSuccess, productCreateFail } from '.
 import { productUpdateRequest, productUpdateSuccess, productUpdateFail } from '../reducers/productReducers';
 import { productCreateReviewRequest, productCreateReviewSuccess, productCreateReviewFail } from '../reducers/productReducers';
 
-export const listProducts = () => async (dispatch) => {
+export const listProducts = (keyword = '') => async (dispatch) => {
     try {
         dispatch(productListRequest());
 
-        const { data } = await axios.get('/api/products');
+        const { data } = await axios.get(`/api/products?keyword=${keyword}`);
 
         dispatch(productListSuccess(data));
     } catch (error) {
