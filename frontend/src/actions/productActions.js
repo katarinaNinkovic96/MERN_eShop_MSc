@@ -6,11 +6,11 @@ import { productCreateRequest, productCreateSuccess, productCreateFail } from '.
 import { productUpdateRequest, productUpdateSuccess, productUpdateFail } from '../reducers/productReducers';
 import { productCreateReviewRequest, productCreateReviewSuccess, productCreateReviewFail } from '../reducers/productReducers';
 
-export const listProducts = (keyword = '') => async (dispatch) => {
+export const listProducts = (keyword = '', pageNumber = '') => async (dispatch) => {
     try {
         dispatch(productListRequest());
 
-        const { data } = await axios.get(`/api/products?keyword=${keyword}`);
+        const { data } = await axios.get(`/api/products?keyword=${keyword}&pageNumber=${pageNumber}`);
 
         dispatch(productListSuccess(data));
     } catch (error) {
@@ -35,7 +35,6 @@ export const listProductDetails = (id) => async (dispatch) => {
 //delete product
 export const deleteProduct = (id) => async (dispatch, getState) => {
     try {
-
         //dispatch - the request
         dispatch(productDeleteRequest());
 

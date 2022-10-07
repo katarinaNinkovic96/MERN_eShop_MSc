@@ -1,10 +1,13 @@
 import asyncHandler from 'express-async-handler'
 import Product from '../models/productModel.js'
-
 // @desc    Fetch all products
 // @route   GET /api/products
 // @access  Public
 const getProducts = asyncHandler(async (req, res) => {
+    const pageSize = 10
+
+    //where is product, which page if don't have more then 1 page || 1
+    const page = Number( req.query.pageNumber) || 1
 
     //with query we get query string - if ?sfa in link with query we get this
     //if there we match the keyword to the name of the product
@@ -21,9 +24,10 @@ const getProducts = asyncHandler(async (req, res) => {
         }
     : {}
 
-    const products = await Product.find({ ...keyword })
+    const count = await Product.count({ ...keyword})
+    const products = await Product.find({ ...keyword }).limit(pageSize).skip(pageSize * (page - 1))
     
-    res.json(products)
+    res.json({ products, page, pages: Math.ceil(count / pageSize) })
 })
 
 // @desc    Fetch single product

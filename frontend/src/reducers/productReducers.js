@@ -32,7 +32,9 @@ const productSlice = createSlice({
         },
         productListSuccess: (state = { products: [] }, action) => {
             state.loading = false;
-            state.products = action.payload;
+            state.products = action.payload.products;
+            state.pages = action.payload.pages;
+            state.page = action.payload.page;
         },
         productListFail: (state, action) => {
             state.loading = false;
