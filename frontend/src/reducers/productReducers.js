@@ -163,3 +163,36 @@ export const {
     productUpdateFail,
     productUpdateReset
 } = productUpdateSlice.actions;
+
+
+
+//create product reviews
+const productReviewCreateSlice = createSlice({
+    name: 'products',
+    initialState: {
+    },
+    reducers: {
+        productCreateReviewRequest: (state, action) => {
+            state.loading = true;
+        },
+        productCreateReviewSuccess: (state, action) => {
+            state.loading = false;
+            state.success = true;
+        },
+        productCreateReviewFail: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
+        productCreateReviewReset: (state, action) => {
+            state.success = false;
+        }
+    }
+});
+
+export const productReviewCreateReducer = productReviewCreateSlice.reducer;
+export const {
+    productCreateReviewRequest,
+    productCreateReviewSuccess,
+    productCreateReviewFail,
+    productCreateReviewReset
+} = productReviewCreateSlice.actions;

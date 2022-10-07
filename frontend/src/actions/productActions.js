@@ -4,6 +4,7 @@ import { productDetailsRequest, productDetailsSuccess, productDetailsFail } from
 import { productDeleteRequest, productDeleteSuccess, productDeleteFail } from '../reducers/productReducers';
 import { productCreateRequest, productCreateSuccess, productCreateFail } from '../reducers/productReducers';
 import { productUpdateRequest, productUpdateSuccess, productUpdateFail } from '../reducers/productReducers';
+import { productCreateReviewRequest, productCreateReviewSuccess, productCreateReviewFail } from '../reducers/productReducers';
 
 export const listProducts = () => async (dispatch) => {
     try {
@@ -144,6 +145,46 @@ export const updateProduct = (product) => async (dispatch, getState) => {
 
     } catch (error) {
         dispatch(productUpdateFail(error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message))
+    }
+}
+
+
+//create product review
+//review object have rating and comment
+export const createProductReview = (productId, review) => async (dispatch, getState) => {
+    try {
+
+        //dispatch - the request
+        dispatch(productCreateReviewRequest());
+
+        //destruction from getState which is a function
+        //we want to get the user login, but then we want to destruction another level and we want to get userInfo
+            //which is in user login
+        //that should give us access to the logged in users object
+        //we get userInfo
+        const {userLogin: { userInfo } } = getState()
+
+       
+        //this is also where we will pass the token for protected routes, will set the authorization here for the token
+        const config = {
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        }
+
+        //we will make our requests
+        //put request
+        await axios.post( `/api/products/${productId}/reviews`, review, config);
+
+
+        //we're going to pass the data, get in as the payload
+        dispatch(productCreateReviewSuccess());
+
+    } catch (error) {
+        dispatch(productCreateReviewFail(error.response && error.response.data.message
             ? error.response.data.message
             : error.message))
     }

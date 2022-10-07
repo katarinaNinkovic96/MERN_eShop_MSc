@@ -3,7 +3,13 @@ import mongoose from 'mongoose'
 const reviewSchema = mongoose.Schema({
     name: { type:String, required: true },
     rating: { type:Number, required: true },
-    comment: { type:String, required: true }
+    comment: { type:String, required: true },
+    user:{
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        //ref serves to connect admin with the product --- 'User' is specific model for thi object ID
+        ref: 'User'
+    }
 }, {
     timestamps: true
 })

@@ -118,5 +118,57 @@ const updateProduct = asyncHandler(async (req, res) => {
 })
 
 
-export { getProducts, getProductById, deleteProduct, createProduct, updateProduct }
+// @desc    Create new review
+// @route   POST /api/products/:id/reviews
+// @access  Private
+const createProductReview = asyncHandler(async (req, res) => {
+
+    const { rating, comment } = req.body
+
+    //id in URL
+    const product = await Product.findById(req.params.id);
+
+    if(product) {
+       const alreadyReviewed = product.reviews.find(r => r.user.toString() === req.user._id.toString())
+
+       if (alreadyReviewed) {
+        res.status(400)
+        throw new Error ('Product already reviewed')
+       }
+
+       //if they did't already add review then construct a review object
+       //just create an object is not being saved or anything
+       const review = {
+        name: req.user.name,
+        rating: Number(rating),
+        comment,
+        user: req.user._id
+       }
+
+       //push on to that the new review
+       product.reviews.push(review)
+
+       //numReviews - because we want update that
+       //that should update the number of views field 
+       product.numReviews = product.reviews.length
+
+       //update the total rating
+       //acc - start with 0
+       //then once we add all the ratings up, we just want to divide by the totasl length of the reviews
+            //that will give us the average
+       product.rating = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product.reviews.length
+
+       await product.save()
+       res.status(201).json({ message: 'Review added '})
+
+    } else {
+        res.status(404);
+        throw new Error ('Product not found')
+    }
+})
+
+
+
+
+export { getProducts, getProductById, deleteProduct, createProduct, updateProduct, createProductReview }
 
