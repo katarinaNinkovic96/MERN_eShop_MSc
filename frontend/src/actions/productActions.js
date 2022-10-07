@@ -5,6 +5,7 @@ import { productDeleteRequest, productDeleteSuccess, productDeleteFail } from '.
 import { productCreateRequest, productCreateSuccess, productCreateFail } from '../reducers/productReducers';
 import { productUpdateRequest, productUpdateSuccess, productUpdateFail } from '../reducers/productReducers';
 import { productCreateReviewRequest, productCreateReviewSuccess, productCreateReviewFail } from '../reducers/productReducers';
+import { productTopRequest, productTopSuccess, productTopFail } from '../reducers/productReducers';
 
 export const listProducts = (keyword = '', pageNumber = '') => async (dispatch) => {
     try {
@@ -189,6 +190,18 @@ export const createProductReview = (productId, review) => async (dispatch, getSt
     }
 }
 
+
+export const listTopProducts = () => async (dispatch) => {
+    try {
+        dispatch(productTopRequest());
+
+        const { data } = await axios.get(`/api/products/top`);
+
+        dispatch(productTopSuccess(data));
+    } catch (error) {
+        dispatch(productTopFail(error.response && error.response.data.message ? error.response.data.message : error.message))
+    }
+}
 
 
 

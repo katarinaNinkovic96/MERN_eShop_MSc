@@ -198,3 +198,29 @@ export const {
     productCreateReviewFail,
     productCreateReviewReset
 } = productReviewCreateSlice.actions;
+
+
+//product Top rated
+const productTopRatedSlice = createSlice({
+    name: 'products',
+    initialState: {
+        products: []
+    },
+    reducers: {
+        productTopRequest: (state, action) => {
+            state.loading = true;
+            state.products = [];
+        },
+        productTopSuccess: (state, action) => {
+            state.loading = false;
+            state.products = action.payload;
+        },
+        productTopFail: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        }
+    }
+});
+
+export const productTopRatedReducer = productTopRatedSlice.reducer;
+export const { productTopRequest, productTopSuccess, productTopFail } = productTopRatedSlice.actions;
