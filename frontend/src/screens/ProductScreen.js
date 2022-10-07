@@ -6,6 +6,7 @@ import Rating from '../commponents/Rating'
 import { listProductDetails, createProductReview } from '../actions/productActions'
 import Loader from '../commponents/Loader'
 import Message from '../commponents/Message'
+import Meta from '../commponents/Meta'
 import { productCreateReviewReset } from '../reducers/productReducers'
 
 const ProductScreen = ( {history, match}) => {
@@ -54,6 +55,7 @@ const ProductScreen = ( {history, match}) => {
       </Link>
       {loading ? <Loader /> : error ? <Message variant = 'danger'>{error}</Message> : (
         <>
+        <Meta title={product.name}/>
         <Row>
         <Col md={6}>
           <Image src={product.image} alt={product.name} fluid /> 
