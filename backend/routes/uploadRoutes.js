@@ -10,7 +10,7 @@ const storage = multer.diskStorage({
     },
     filename(req, file, cb) {
         //for extension we want jpg and png - for this we use path module from node (original name pull off extension which is original)
-        cb(null, `${file.fieldname} - ${Date.now()}${path.extname(file.originalname)}`);
+        cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
     }
 })
 
