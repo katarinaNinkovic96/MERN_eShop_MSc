@@ -2,8 +2,7 @@ import axios from 'axios'
 import {productListRequest, productListSuccess, productListFail} from '../reducers/productReducers';
 import { productDetailsRequest, productDetailsSuccess, productDetailsFail } from '../reducers/productReducers';
 import { productDeleteRequest, productDeleteSuccess, productDeleteFail } from '../reducers/productReducers';
-import { productCreateRequest, productCreateSuccess, productCreateFail } from '../reducers/productReducers';
-import { productUpdateRequest, productUpdateSuccess, productUpdateFail } from '../reducers/productReducers';
+import { productManageRequest, productManageSuccess, productManageFail } from '../reducers/productReducers';
 import { productCreateReviewRequest, productCreateReviewSuccess, productCreateReviewFail } from '../reducers/productReducers';
 import { productTopRequest, productTopSuccess, productTopFail } from '../reducers/productReducers';
 
@@ -77,7 +76,7 @@ export const createProduct = (product) => async (dispatch, getState) => {
     try {
 
         //dispatch - the request
-        dispatch(productCreateRequest());
+        dispatch(productManageRequest());
 
         //destruction from getState which is a function
         //we want to get the user login, but then we want to destruction another level and we want to get userInfo
@@ -100,10 +99,10 @@ export const createProduct = (product) => async (dispatch, getState) => {
 
 
         //we're going to pass the data, get in as the payload
-        dispatch(productCreateSuccess(data));
+        dispatch(productManageSuccess(data));
 
     } catch (error) {
-        dispatch(productCreateFail(error.response && error.response.data.message
+        dispatch(productManageFail(error.response && error.response.data.message
             ? error.response.data.message
             : error.message))
     }
@@ -114,7 +113,7 @@ export const updateProduct = (product) => async (dispatch, getState) => {
     try {
 
         //dispatch - the request
-        dispatch(productUpdateRequest());
+        dispatch(productManageRequest());
 
         //destruction from getState which is a function
         //we want to get the user login, but then we want to destruction another level and we want to get userInfo
@@ -138,10 +137,10 @@ export const updateProduct = (product) => async (dispatch, getState) => {
 
 
         //we're going to pass the data, get in as the payload
-        dispatch(productUpdateSuccess(data));
+        dispatch(productManageSuccess(data));
 
     } catch (error) {
-        dispatch(productUpdateFail(error.response && error.response.data.message
+        dispatch(productManageFail(error.response && error.response.data.message
             ? error.response.data.message
             : error.message))
     }

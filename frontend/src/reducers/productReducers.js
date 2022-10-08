@@ -98,75 +98,37 @@ export const { productDeleteRequest, productDeleteSuccess, productDeleteFail } =
 
 
 //create product
-const productCreateSlice = createSlice({
+const productManageSlice = createSlice({
     name: 'products',
     initialState: {
         
     },
     reducers: {
-        productCreateRequest: (state, action) => {
+        productManageRequest: (state) => {
             state.loading = true;
         },
-        productCreateSuccess: (state, action) => {
+        productManageSuccess: (state, action) => {
             state.loading = false;
             state.success = true;
             state.product = action.payload;
         },
-        productCreateFail: (state, action) => {
+        productManageFail: (state, action) => {
             state.loading = false;
             state.error = action.payload;
         },
-        productCreateReset: (state, action) => {
+        productManageReset: (state) => {
             state.success = false;
         }
     }
 });
 
-export const productCreateReducer = productCreateSlice.reducer;
+export const productManageReducer = productManageSlice.reducer;
 export const {
-    productCreateRequest,
-    productCreateSuccess,
-    productCreateFail,
-    productCreateReset
-} = productCreateSlice.actions;
-
-
-
-//update product
-const productUpdateSlice = createSlice({
-    name: 'products',
-    initialState: {
-        product: {}
-    },
-    reducers: {
-        productUpdateRequest: (state, action) => {
-            state.loading = true;
-        },
-        productUpdateSuccess: (state, action) => {
-            state.loading = false;
-            state.success = true;
-            state.product = action.payload;
-        },
-        productUpdateFail: (state, action) => {
-            state.loading = false;
-            state.error = action.payload;
-        },
-        productUpdateReset: (state, action) => {
-            state.product = {};
-            state.success = false;
-        }
-    }
-});
-
-export const productUpdateReducer = productUpdateSlice.reducer;
-export const {
-    productUpdateRequest,
-    productUpdateSuccess,
-    productUpdateFail,
-    productUpdateReset
-} = productUpdateSlice.actions;
-
-
+    productManageRequest,
+    productManageSuccess,
+    productManageFail,
+    productManageReset
+} = productManageSlice.actions;
 
 //create product reviews
 const productReviewCreateSlice = createSlice({
