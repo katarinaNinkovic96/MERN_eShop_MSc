@@ -30,10 +30,6 @@ if (process.env.NODE_ENV === 'development') {
 //that will allow us to accept JSON data in the body
 app.use(express.json())
 
-app.get('/', (req, res) => {
-    res.send('API is running...')
-})
-
 app.use('/api/products', productRoutes)
 app.use('/api/users', userRoutes)
 app.use('/api/orders', orderRoutes)
@@ -41,7 +37,6 @@ app.use('/api/upload', uploadRoutes)
 
 //when we're ready to make our payment, we'll hit this route and we'll fetch this client ID
 app.get('/api/config/paypal', (req,res) => res.send(process.env.PAYPAL_CLIENT_ID))
-
 
 //uploads folder is not going to be accessible by default
 //We need to make this a static folder so that it can get loaded in the browser
@@ -53,6 +48,16 @@ app.get('/api/config/paypal', (req,res) => res.send(process.env.PAYPAL_CLIENT_ID
 const __dirname = path.resolve();
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '/frontend/build')));
+    app.get('*', (req, res) => res.sendFile(
+        path.resolve(__dirname, 'frontend', 'build', 'index.html')
+    ));
+} else {
+    app.get('/', (req, res) => {
+        res.send('API is running...')
+    });
+}
 
 app.use(notFound)
 
