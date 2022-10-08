@@ -11,7 +11,7 @@ const userLoginSlice = createSlice({
         userInfo: userInfoFromStorage
     },
     reducers: {
-        userLoginRequest: (state, action) => {
+        userLoginRequest: (state) => {
             state.loading = true;
         },
         userLoginSuccess: (state, action) => {
@@ -25,22 +25,25 @@ const userLoginSlice = createSlice({
         userLogout: (state, action) => {
             state.loading = false;
             state.userInfo = action.payload;
+        },
+        userLoginReset: (state) => {
+            state.loading = false;
+            state.error = false;
         }
     }
 });
 
 export const userLoginReducer = userLoginSlice.reducer;
-export const { userLoginRequest, userLoginSuccess, userLoginFail, userLogout } = userLoginSlice.actions;
+export const { userLoginRequest, userLoginSuccess, userLoginFail, userLogout, userLoginReset } = userLoginSlice.actions;
 
 
 //register
 const userRegisterSlice = createSlice({
     name: 'users',
     initialState: {
-
     },
     reducers: {
-        userRegisterRequest: (state, action) => {
+        userRegisterRequest: (state) => {
             state.loading = true;
         },
         userRegisterSuccess: (state, action) => {
@@ -50,12 +53,16 @@ const userRegisterSlice = createSlice({
         userRegisterFail: (state, action) => {
             state.loading = false;
             state.error = action.payload;
+        },
+        userRegisterReset: (state) => {
+            state.loading = false;
+            state.error = false;
         }
     }
 });
 
 export const userRegisterReducer = userRegisterSlice.reducer;
-export const { userRegisterRequest, userRegisterSuccess, userRegisterFail } = userRegisterSlice.actions;
+export const { userRegisterRequest, userRegisterSuccess, userRegisterFail, userRegisterReset } = userRegisterSlice.actions;
 
 
 //details

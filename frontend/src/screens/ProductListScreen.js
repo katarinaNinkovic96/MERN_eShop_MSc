@@ -7,6 +7,7 @@ import Message from '../commponents/Message'
 import Loader from '../commponents/Loader'
 import Paginate from '../commponents/Paginate'
 import { listProducts, deleteProduct } from '../actions/productActions'
+import { productCreateReset } from '../reducers/productReducers';
 
 
 const ProductListScreen = ({ history, match} ) => {
@@ -17,24 +18,21 @@ const ProductListScreen = ({ history, match} ) => {
     const productList = useSelector(state => state.productList)
     const { loading, error, products, page, pages } = productList
 
-
     const productDelete = useSelector(state => state.productDelete)
     const { loading: loadingDelete, error:errorDelete} = productDelete
-
 
     const productCreate = useSelector(state => state.productCreate)
     const { loading: loadingCreate, error:errorCreate, success: successCreate, product: createdProduct} = productCreate
 
-    //because we want the user who does't admin block to see this page, if else down
+    // because we want the user who is admin to see this page, else not
     const userLogin = useSelector(state => state.userLogin)
     const { userInfo } = userLogin
 
-
-    //as soon as useEffect runs, we want to dispatch the productCreateReset
+    // as soon as useEffect runs, we want to dispatch the productCreateReset
     useEffect(() => {
-        //dispatch(productCreateReset());
+        dispatch(productCreateReset());
 
-        if (!userInfo.isAdmin) {
+        if (!userInfo || !userInfo.isAdmin) {
             history.push('/login');
         }
 

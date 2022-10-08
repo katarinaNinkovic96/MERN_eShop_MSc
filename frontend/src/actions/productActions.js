@@ -72,8 +72,6 @@ export const deleteProduct = (id) => async (dispatch, getState) => {
     dispatch(listProducts());
 }
 
-
-
 //create product
 export const createProduct = (product) => async (dispatch, getState) => {
     try {
@@ -110,7 +108,6 @@ export const createProduct = (product) => async (dispatch, getState) => {
             : error.message))
     }
 }
-
 
 //update product
 export const updateProduct = (product) => async (dispatch, getState) => {

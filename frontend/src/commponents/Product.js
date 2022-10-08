@@ -7,6 +7,8 @@ const Product = ({product}) => {
   return (
     <Card className = 'my-3 p-3 rounded'>
         <Link to={`/product/${product._id}`}>
+            {/*img src path could be "uploads/image-filename.ext" (for created products from admin)
+               or directly from frontend "images/image-filename.ext" (for externally added products)*/}
             <Card.Img src={product.image} variant = 'top' />
         </Link>
 

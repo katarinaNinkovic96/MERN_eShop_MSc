@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Message from '../commponents/Message'
 import Loader from '../commponents/Loader'
 import { login } from '../actions/userActions'
+import { userLoginReset } from '../reducers/userReducers';
 import FormContainer from '../commponents/FormContainer'
 
 
@@ -32,13 +33,15 @@ const LoginScreen = ({ location, history }) => {
     //I want to redirect if we aew already logged in, I don't want to be able to come to the login screen if we're already logged in.
     // add useEffect
     useEffect(() => {
+        dispatch(userLoginReset());
+
         //check for userInfo, if userInfo exists (null if we're not logged in) let's take our props history and call push
         //we want to go to wharever is in redirect 
         if(userInfo) {
             history.push(redirect)
         }
         //dependencies - history, userInfo(beacuse of that changes we want to redirect), redirect
-    }, [history, userInfo, redirect])
+    }, [dispatch, history, userInfo, redirect])
 
     // submitHandler is a form so we're going to pass e and then call e.preventDefault so the page doesn't actually refresh
     const submitHandler = (e) => {
@@ -73,6 +76,7 @@ const LoginScreen = ({ location, history }) => {
                     //value is password from the state
                     value={password} 
                     onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="on"
                 ></Form.Control>
             </Form.Group>
 
