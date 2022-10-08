@@ -7,7 +7,7 @@ import { userListRequest, userListSuccess, userListFail, userListReset } from '.
 import { userDeleteRequest, userDeleteSuccess, userDeleteFail } from '../reducers/userReducers';
 import { userUpdateRequest, userUpdateSuccess, userUpdateFail } from '../reducers/userReducers';
 import { orderListMyReset } from '../reducers/orderReducers'
-
+import { cartReset } from '../reducers/cartReducers';
 
 //login
 export const login = ( email, password ) => async (dispatch) => {
@@ -49,13 +49,18 @@ export const login = ( email, password ) => async (dispatch) => {
 
 //logout
 export const logout = () => async (dispatch) => {
-    //remove from localStorage
-    localStorage.removeItem('userInfo')
-    //we want to dispatch our user logout
+    // clear localStorage
+    localStorage.removeItem('userInfo');
+    localStorage.removeItem('cartItems');
+    localStorage.removeItem('paymentMethod');
+    localStorage.removeItem('shippingAddress');
+
+    // we want to dispatch our user logout
     dispatch(userLogout());
     dispatch(userDetailsReset());
     dispatch(userListReset());
     dispatch(orderListMyReset());
+    dispatch(cartReset());
 }
 
 
