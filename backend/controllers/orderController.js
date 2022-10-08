@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler'
 //import { restart } from 'nodemon'
 import Order from '../models/orderModel.js'
+import Product from '../models/productModel.js'
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -60,7 +61,6 @@ const getOrderByID = asyncHandler(async (req, res) => {
 const updateOrderToPaid = asyncHandler(async (req, res) => {
     //we have id by URL - req.params.id
     const order = await Order.findById(req.params.id)
-
     if (order) {
         order.isPaid = true;
         order.paidAt = Date.now();
@@ -72,6 +72,16 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
             status: req.body.status,
             update_time: req.body.update_time,
             email_address: req.body.payer.email_address
+        }
+
+        for (let i=0; i<order.orderItems.length; i++) {
+            const item = order.orderItems[i];
+            const productId = item.product.toString().replace(/ObjectId\("(.*)"\)/, "$1");
+            const product = await Product.findById(productId);
+            if (product) {
+                product.countInStock -= item.qty;
+                await product.save();
+            }
         }
 
         //stuff in order - we want to save it in the database

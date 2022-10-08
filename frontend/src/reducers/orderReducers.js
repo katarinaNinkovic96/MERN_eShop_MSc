@@ -48,12 +48,16 @@ const orderDetailsSlice = createSlice({
         orderDetailsFail: (state, action) => {
             state.loading = false;
             state.error = action.payload;
+        },
+        orderDetailsReset: (state) => {
+            state.loading = false;
+            state.error = false;
         }
     }
 });
 
 export const orderDetailsReducer = orderDetailsSlice.reducer;
-export const { orderDetailsRequest, orderDetailsSuccess, orderDetailsFail } = orderDetailsSlice.actions;
+export const { orderDetailsRequest, orderDetailsSuccess, orderDetailsFail, orderDetailsReset } = orderDetailsSlice.actions;
 
 
 //order pay

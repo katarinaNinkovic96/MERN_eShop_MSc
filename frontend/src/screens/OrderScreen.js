@@ -10,7 +10,7 @@ import Message from '../commponents/Message'
 import Loader from '../commponents/Loader'
 import { Link } from 'react-router-dom'
 import { getOrderDetails, payOrder, deliverOrder } from '../actions/orderActions';
-import { orderPayReset, orderDeliverReset } from '../reducers/orderReducers';
+import { orderPayReset, orderDeliverReset, orderDetailsReset } from '../reducers/orderReducers';
 import { getPaypalId } from '../actions/paypalIdActions';
 import { paypalIdReset } from '../reducers/paypalIdReducer';
 
@@ -56,12 +56,14 @@ const OrderScreen = ({ match, history }) => {
             dispatch(getOrderDetails(orderId));
         } else if (order._id !== orderId) {
             dispatch(getOrderDetails(orderId));
+        } else if (error) {
+            dispatch(orderDetailsReset())
         }
-    }, [dispatch, paypalId, order, successPay, successDeliver, orderId, userInfo, history])
+    }, [dispatch, error, paypalId, order, successPay, successDeliver, orderId, userInfo, history])
 
     //where we want to call that pay order action that we created
     const successPaymentHandler = (paymentResult) => {
-        console.log(paymentResult);
+        // console.log(paymentResult);
         dispatch(payOrder(orderId, paymentResult));
     }
 
