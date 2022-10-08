@@ -149,6 +149,7 @@ const productReviewCreateSlice = createSlice({
         },
         productCreateReviewReset: (state, action) => {
             state.success = false;
+            state.error = false;
         }
     }
 });

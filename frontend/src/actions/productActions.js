@@ -122,7 +122,6 @@ export const updateProduct = (product) => async (dispatch, getState) => {
         //we get userInfo
         const {userLogin: { userInfo } } = getState()
 
-       
         //this is also where we will pass the token for protected routes, will set the authorization here for the token
         const config = {
             headers: {
@@ -151,7 +150,6 @@ export const updateProduct = (product) => async (dispatch, getState) => {
 //review object have rating and comment
 export const createProductReview = (productId, review) => async (dispatch, getState) => {
     try {
-
         //dispatch - the request
         dispatch(productCreateReviewRequest());
 
@@ -162,7 +160,6 @@ export const createProductReview = (productId, review) => async (dispatch, getSt
         //we get userInfo
         const {userLogin: { userInfo } } = getState()
 
-       
         //this is also where we will pass the token for protected routes, will set the authorization here for the token
         const config = {
             headers: {
@@ -175,7 +172,6 @@ export const createProductReview = (productId, review) => async (dispatch, getSt
         //put request
         await axios.post( `/api/products/${productId}/reviews`, review, config);
 
-
         //we're going to pass the data, get in as the payload
         dispatch(productCreateReviewSuccess());
 
@@ -185,7 +181,6 @@ export const createProductReview = (productId, review) => async (dispatch, getSt
             : error.message))
     }
 }
-
 
 export const listTopProducts = () => async (dispatch) => {
     try {
@@ -198,6 +193,3 @@ export const listTopProducts = () => async (dispatch) => {
         dispatch(productTopFail(error.response && error.response.data.message ? error.response.data.message : error.message))
     }
 }
-
-
-
