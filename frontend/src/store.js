@@ -45,6 +45,8 @@ import {
   orderListReducer
 } from './reducers/orderReducers';
 
+import { paypalIdReducer } from './reducers/paypalIdReducer';
+
 const store = configureStore({
   reducer: {
     productList: productReducer,
@@ -66,7 +68,8 @@ const store = configureStore({
     orderPay: orderPayReducer,
     orderDeliver: orderDeliverReducer,
     orderListMy: orderListMyReducer,
-    orderList: orderListReducer
+    orderList: orderListReducer,
+    paypalId: paypalIdReducer
   }
 });
 

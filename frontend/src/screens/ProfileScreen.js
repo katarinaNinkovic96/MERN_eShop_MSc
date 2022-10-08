@@ -58,12 +58,12 @@
                     dispatch(userUpdateProfileReset());
 
                     //getUserDetails takes in an ID but in this case we're getting our profile
-                    dispatch(getUserDetails('profile'))
-                    dispatch(listMyOrders())    //we don't need to pass anything we just want to call it
+                    dispatch(getUserDetails('profile'));
                 } else {
-                    setName(user.name)
-                    setEmail(user.email)
+                    setName(user.name);
+                    setEmail(user.email);
                 }
+                dispatch(listMyOrders());
             }
 
             //dependencies - history, userInfo(beacuse of that changes we want to redirect), redirect
@@ -86,12 +86,12 @@
     
       return <Row>
         <Col md = {3}>
-        <h2>User Profile</h2>
+            <h2>User Profile</h2>
             {message && <Message variant='danger'>{message}</Message>}
             {error && <Message variant='danger'>{error}</Message>}
             {success && <Message variant='success'>Profile Updated</Message>}
             {loading && <Loader />}
-            <Form onSubmit={submitHandler}>
+            <Form onSubmit={submitHandler} autoComplete="on">
                 <Form.Group controlId='name'>
                     <Form.Label>Name</Form.Label>
                     <Form.Control 
@@ -122,6 +122,7 @@
                         //value is password from the state
                         value={password} 
                         onChange={(e) => setPassword(e.target.value)}
+                        autoComplete="off"
                     ></Form.Control>
                 </Form.Group>
 
@@ -133,6 +134,7 @@
                         //value is password from the state
                         value={confirmPassword} 
                         onChange={(e) => setConfirmPassword(e.target.value)}
+                        autoComplete="off"
                     ></Form.Control>
                 </Form.Group>
     
