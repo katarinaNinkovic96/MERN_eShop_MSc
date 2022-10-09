@@ -73,7 +73,7 @@ const OrderScreen = ({ match, history }) => {
    
     return (
         paypalId.error ? <Message variant='danger'>{paypalId.error}</Message> :
-        !paypalId.ppId ? <Loader/> :
+        (!paypalId.ppId || paypalId.loading) ? <Loader/> :
         <PayPalScriptProvider
             options={{
                 "client-id" : `${paypalId.ppId}`,
@@ -184,11 +184,11 @@ const OrderScreen = ({ match, history }) => {
 
                                 { !order.isPaid && <ListGroup.Item>
                                     { loadingPay && <Loader /> }
-                                    <PayPalButton
+                                    { !paypalId.loading && !loadingPay && <PayPalButton
                                         amount={order.totalPrice}
                                         currency="EUR"
                                         onSuccess={successPaymentHandler}
-                                    />
+                                    /> }
                                 </ListGroup.Item> }
 
                                 { loadingDeliver && <Loader /> }
