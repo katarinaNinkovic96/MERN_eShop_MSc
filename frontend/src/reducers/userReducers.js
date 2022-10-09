@@ -153,29 +153,33 @@ export const userListReducer = userListSlice.reducer;
 export const { userListRequest, userListSuccess, userListFail, userListReset } = userListSlice.actions;
 
 
-//Delete user
-const userDeleteSlice = createSlice({
+// Manipulate w/ user
+const userManipulateSlice = createSlice({
     name: 'users',
     initialState: {
-      
     },
     reducers: {
-        userDeleteRequest: (state, action) => {
-            state.loading = true
+        userManipulateRequest: (state, action) => {
+            state.loading = true;
         },
-        userDeleteSuccess: (state, action) => {
+        userManipulateSuccess: (state, action) => {
             state.loading = false;
-            state.success = true;
+            state.success = action.payload;
         },
-        userDeleteFail: (state, action) => {
+        userManipulateFail: (state, action) => {
             state.loading = false;
             state.error = action.payload;
+        },
+        userManipulateReset: (state) => {
+            state.loading = false;
+            state.error = false;
+            state.success = false;
         }
     }
 });
 
-export const userDeleteReducer = userDeleteSlice.reducer;
-export const { userDeleteRequest, userDeleteSuccess, userDeleteFail } = userDeleteSlice.actions;
+export const userManipulateReducer = userManipulateSlice.reducer;
+export const { userManipulateRequest, userManipulateSuccess, userManipulateFail, userManipulateReset } = userManipulateSlice.actions;
 
 
 

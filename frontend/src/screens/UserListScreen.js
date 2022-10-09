@@ -1,29 +1,31 @@
 import React, { useEffect } from 'react'
 import { LinkContainer } from 'react-router-bootstrap'
 import { Table, Button } from 'react-bootstrap'
-//import useDispatch and useSelector so we can deal with our redux state
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../commponents/Message'
 import Loader from '../commponents/Loader'
-import { listUsers, deleteUser } from '../actions/userActions'
+import { listUsers } from '../actions/userActions';
+// import { deleteUser } from '../actions/userActions';
+import { userManipulateReset } from '../reducers/userReducers';
 // component
 import UserActiveButton from '../commponents/UserActiveButton'
 
 const UserListScreen = ({ history } ) => {
     const dispatch = useDispatch();
 
-    const userList = useSelector(state => state.userList)
-    const { loading, error, users } = userList
+    const userList = useSelector(state => state.userList);
+    const { loading, error, users } = userList;
 
     //because we want the user who does't admin block to see this page, if else down
-    const userLogin = useSelector(state => state.userLogin)
-    const { userInfo } = userLogin
+    const userLogin = useSelector(state => state.userLogin);
+    const { userInfo } = userLogin;
 
-    //not in use
-    //const userDelete = useSelector(state => state.userDelete)
-    //const { success: successDelete } = userDelete
+    const userManipulate = useSelector(state => state.userManipulate);
+    const { success: successManipulate, error: errorManipulate, loading: loadingManipulate  } = userManipulate;
 
     useEffect(() => {
+        dispatch(userManipulateReset());
+
         if(userInfo && userInfo.isAdmin ) {
             dispatch(listUsers())
             //if don't login and if don't admin
@@ -34,14 +36,18 @@ const UserListScreen = ({ history } ) => {
        
     }, [dispatch, history, userInfo])
 
-    const deleteHandler = (id) => {
-        if (window.confirm('Are you sure?')){
-            dispatch(deleteUser(id))
-        }
-    }
+    // const deleteHandler = (id) => {
+    //     if (window.confirm('Are you sure?')){
+    //         dispatch(deleteUser(id))
+    //     }
+    // }
 
     return <>
         <h1>Users</h1>
+        { (!loading && loadingManipulate) ?
+        <Loader /> : errorManipulate ?
+        <Message variant='danger'>{errorManipulate}</Message> : successManipulate ?
+        <Message variant='success'>{successManipulate}</Message> : <></> }
         { loading ?
         <Loader /> : error ?
         <Message variant='danger'>{error}</Message> :

@@ -32,7 +32,7 @@ import {
     userDetailsReducer,
     userUpdateProfileReducer,
     userListReducer,
-    userDeleteReducer,
+    userManipulateReducer,
     userUpdateReducer
 } from './reducers/userReducers';
 
@@ -62,7 +62,7 @@ const store = configureStore({
     userDetails: userDetailsReducer,
     userUpdateProfile: userUpdateProfileReducer,
     userList: userListReducer,
-    userDelete: userDeleteReducer,
+    userManipulate: userManipulateReducer,
     userUpdate: userUpdateReducer,
     orderCreate: orderCreateReducer,
     orderDelete: orderDeleteReducer,

@@ -4,7 +4,7 @@ import { userRegisterRequest, userRegisterSuccess, userRegisterFail } from '../r
 import { userDetailsRequest, userDetailsSuccess, userDetailsFail, userDetailsReset } from '../reducers/userReducers';
 import { userUpdateProfileRequest, userUpdateProfileSuccess, userUpdateProfileFail } from '../reducers/userReducers';
 import { userListRequest, userListSuccess, userListFail, userListReset } from '../reducers/userReducers';
-import { userDeleteRequest, userDeleteSuccess, userDeleteFail } from '../reducers/userReducers';
+import { userManipulateRequest, userManipulateSuccess, userManipulateFail } from '../reducers/userReducers';
 import { userUpdateRequest, userUpdateSuccess, userUpdateFail } from '../reducers/userReducers';
 import { orderListMyReset } from '../reducers/orderReducers'
 import { cartReset } from '../reducers/cartReducers';
@@ -230,7 +230,7 @@ export const deleteUser = (id) => async (dispatch, getState) => {
     try {
 
         //dispatch - the request
-        dispatch(userDeleteRequest());
+        dispatch(userManipulateRequest());
 
         //destruction from getState which is a function
         //we want to get the user login, but then we want to destruction another level and we want to get userInfo
@@ -249,13 +249,13 @@ export const deleteUser = (id) => async (dispatch, getState) => {
 
         //we will make our requests
         //delete request
-        await axios.delete( `/api/users/${id}`, config);
+        const { data: { message } } = await axios.delete( `/api/users/${id}`, config);
 
         //we're going to pass the data, get in as the payload
-        dispatch(userDeleteSuccess());
+        dispatch(userManipulateSuccess(message));
 
     } catch (error) {
-        dispatch(userDeleteFail(error.response && error.response.data.message ? error.response.data.message : error.message))
+        dispatch(userManipulateFail(error.response && error.response.data.message ? error.response.data.message : error.message))
     }
 
     // update user list
@@ -289,7 +289,6 @@ export const updateUser = (user) => async (dispatch, getState) => {
         //delete request
         const { data } = await axios.put( `/api/users/${user._id}`, user, config);
 
-
         //we're going to pass the data, get in as the payload
         dispatch(userUpdateSuccess());
 
@@ -303,7 +302,7 @@ export const updateUser = (user) => async (dispatch, getState) => {
 // Deactivate user
 export const deactivateUser = (id) => async (dispatch, getState) => {
     try {
-        dispatch(userDeleteRequest());
+        dispatch(userManipulateRequest());
 
         const { userLogin: { userInfo } } = getState();
         const config = {
@@ -312,11 +311,11 @@ export const deactivateUser = (id) => async (dispatch, getState) => {
             }
         }
 
-        await axios.post( `/api/users/${id}/deactivate`, null, config);
+        const { data: { message } } = await axios.post( `/api/users/${id}/deactivate`, null, config);
 
-        dispatch(userDeleteSuccess());
+        dispatch(userManipulateSuccess(message));
     } catch (error) {
-        dispatch(userDeleteFail(error.response && error.response.data.message ? error.response.data.message : error.message))
+        dispatch(userManipulateFail(error.response && error.response.data.message ? error.response.data.message : error.message))
     }
 
     // update user list
@@ -326,7 +325,7 @@ export const deactivateUser = (id) => async (dispatch, getState) => {
 // Re-activate user
 export const reActivateUser = (id) => async (dispatch, getState) => {
     try {
-        dispatch(userDeleteRequest());
+        dispatch(userManipulateRequest());
 
         const { userLogin: { userInfo } } = getState();
         const config = {
@@ -335,11 +334,11 @@ export const reActivateUser = (id) => async (dispatch, getState) => {
             }
         }
 
-        await axios.post( `/api/users/${id}/re-activate`, null, config);
+        const { data: { message } } = await axios.post( `/api/users/${id}/re-activate`, null, config);
 
-        dispatch(userDeleteSuccess());
+        dispatch(userManipulateSuccess(message));
     } catch (error) {
-        dispatch(userDeleteFail(error.response && error.response.data.message ? error.response.data.message : error.message))
+        dispatch(userManipulateFail(error.response && error.response.data.message ? error.response.data.message : error.message))
     }
 
     // update user list
