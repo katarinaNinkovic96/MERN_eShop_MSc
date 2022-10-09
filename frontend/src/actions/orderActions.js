@@ -22,6 +22,8 @@ import {
     orderDeleteFail
 } from '../reducers/orderReducers'
 
+import { cartReset } from '../reducers/cartReducers';
+
 import axios from 'axios';
 
 export const createOrder = ( order ) => async (dispatch, getState) => {
@@ -57,11 +59,9 @@ export const createOrder = ( order ) => async (dispatch, getState) => {
         //we're going to pass the data, get in as the payload
         dispatch(orderCreateSuccess(data));
 
-        //userLoginSuccess will get fired off, it will be a pass into our state and then it will update the local storage
-        //we're going to pass the data, get in as the payload
-        //dispatch(userLoginSuccess(data));
-
-        //localStorage.setItem('userInfo', JSON.stringify(data))
+        // clear the cart after successfull order
+        dispatch(cartReset());
+        localStorage.removeItem('cartItems');
 
     } catch (error) {
         dispatch(orderCreateFail(error.response && error.response.data.message ? error.response.data.message : error.message))
