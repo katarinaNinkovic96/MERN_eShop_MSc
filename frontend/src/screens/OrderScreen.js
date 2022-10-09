@@ -1,5 +1,5 @@
-import { PayPalButton } from 'react-paypal-button-v2'
-import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+// import { PayPalButton } from 'react-paypal-button-v2'
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 import React, { useEffect } from 'react'
 import { Row, Col, ListGroup, Image, Card, Button} from 'react-bootstrap'
@@ -61,10 +61,28 @@ const OrderScreen = ({ match, history }) => {
         }
     }, [dispatch, error, paypalId, order, successPay, successDeliver, orderId, userInfo, history])
 
-    //where we want to call that pay order action that we created
-    const successPaymentHandler = (paymentResult) => {
-        // console.log(paymentResult);
-        dispatch(payOrder(orderId, paymentResult));
+    const successPaymentHandler = (data, actions) => {
+        return actions.order
+            .capture()
+            .then((paymentResult) => {
+                // console.log(paymentResult);
+                dispatch(payOrder(orderId, paymentResult));
+            });
+    }
+
+    const createOrderHandler = (data, actions) => {
+        return actions.order
+            .create({
+                purchase_units: [{
+                    amount: {
+                        currency_code: "EUR",
+                        value: order.totalPrice
+                    }
+                }
+            ]})
+            .then((orderId) => {
+                return orderId;
+            });
     }
 
     const deliverHandler = () => {
@@ -184,10 +202,9 @@ const OrderScreen = ({ match, history }) => {
 
                                 { !order.isPaid && <ListGroup.Item>
                                     { loadingPay && <Loader /> }
-                                    { !paypalId.loading && !loadingPay && <PayPalButton
-                                        amount={order.totalPrice}
-                                        currency="EUR"
-                                        onSuccess={successPaymentHandler}
+                                    { !paypalId.loading && !loadingPay && <PayPalButtons
+                                        onApprove={successPaymentHandler}
+                                        createOrder={createOrderHandler}
                                     /> }
                                 </ListGroup.Item> }
 
