@@ -1,8 +1,10 @@
-// import { PayPalButton } from 'react-paypal-button-v2'
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-
 import React, { useEffect } from 'react'
 import { Row, Col, ListGroup, Image, Card, Button} from 'react-bootstrap'
+
+import { getPaypalId } from '../actions/paypalIdActions';
+import { paypalIdReset } from '../reducers/paypalIdReducer';
+// paypal 3pp
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 //import useDispatch and useSelector so we can deal with our redux state
 import { useDispatch, useSelector } from 'react-redux'
@@ -11,8 +13,6 @@ import Loader from '../commponents/Loader'
 import { Link } from 'react-router-dom'
 import { getOrderDetails, payOrder, deliverOrder } from '../actions/orderActions';
 import { orderPayReset, orderDeliverReset, orderDetailsReset } from '../reducers/orderReducers';
-import { getPaypalId } from '../actions/paypalIdActions';
-import { paypalIdReset } from '../reducers/paypalIdReducer';
 
 const OrderScreen = ({ match, history }) => {
     const orderId = match.params.id;
@@ -78,8 +78,8 @@ const OrderScreen = ({ match, history }) => {
                         currency_code: "EUR",
                         value: order.totalPrice
                     }
-                }
-            ]})
+                }]
+            })
             .then((orderId) => {
                 return orderId;
             });
@@ -205,6 +205,7 @@ const OrderScreen = ({ match, history }) => {
                                     { !paypalId.loading && !loadingPay && <PayPalButtons
                                         onApprove={successPaymentHandler}
                                         createOrder={createOrderHandler}
+                                        id="ppButton"
                                     /> }
                                 </ListGroup.Item> }
 

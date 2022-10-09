@@ -11,12 +11,12 @@ import ChechoutSteps from '../commponents/ChechoutSteps'
 //we're going to want to redirect our push to our payment screen
 const ShippingScreen = ({ history }) => {
     const cart = useSelector (state => state.cart)
-    const { shippingAddress } = cart
+    const { shippingAddress } = cart;
 
-    const [address, setAddress] = useState(shippingAddress.address);
-    const [city, setCity] = useState(shippingAddress.city);
-    const [postalCode, setPostalCode] = useState(shippingAddress.postalCode);
-    const [country, setCountry] = useState(shippingAddress.country);
+    const [address, setAddress] = useState(shippingAddress.address || '');
+    const [city, setCity] = useState(shippingAddress.city || '');
+    const [postalCode, setPostalCode] = useState(shippingAddress.postalCode || '');
+    const [country, setCountry] = useState(shippingAddress.country || '');
 
     const dispatch = useDispatch();
 
@@ -26,7 +26,6 @@ const ShippingScreen = ({ history }) => {
         //after dispatch I want to move to the next page
         history.push('/payment');
     }
-
 
   return (
     <FormContainer>

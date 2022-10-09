@@ -18,7 +18,6 @@ const Header = () => {
   //we want to get from userLogin (part of the state) userInfo
   const { userInfo } = userLogin
 
-
   const logoutHandler = () => {
     dispatch(logout())
   }
