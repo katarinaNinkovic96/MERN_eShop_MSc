@@ -9,17 +9,24 @@ import {
     getMyOrders,
     getOrders
 } from '../controllers/orderController.js'
-import { protect, admin } from '../middleware/authMiddleware.js'
+import { tokenMiddleware, adminMiddleware } from '../middleware/authMiddleware.js'
 
 //all the functionality will go in the controller
 //Controller with all the functions and Routes just have the root and point to the specific controller functions
 
-router.route('/').post(protect, addOrderItems).get(protect, admin, getOrders);
-router.route('/myorders').get(protect, getMyOrders);
-router.route('/:id').get(protect, getOrderByID).delete(protect, deleteOrder);
-router.route('/:id/pay').put(protect, updateOrderToPaid);
-router.route('/:id/deliver').put(protect, admin, updateOrderToDelivered);
+router.route('/')
+    .post(tokenMiddleware, addOrderItems)
+    .get(tokenMiddleware, adminMiddleware, getOrders);
 
-export default router
+router.route('/myorders').get(tokenMiddleware, getMyOrders);
+
+router.route('/:id')
+    .get(tokenMiddleware, getOrderByID)
+    .delete(tokenMiddleware, deleteOrder);
+
+router.route('/:id/pay').put(tokenMiddleware, updateOrderToPaid);
+router.route('/:id/deliver').put(tokenMiddleware, adminMiddleware, updateOrderToDelivered);
+
+export default router;
 
 //after we bring this use routs into the server

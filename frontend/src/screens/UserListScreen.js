@@ -26,7 +26,7 @@ const UserListScreen = ({ history } ) => {
     useEffect(() => {
         dispatch(userManipulateReset());
 
-        if(userInfo && userInfo.isAdmin ) {
+        if (userInfo && userInfo.isAdmin) {
             dispatch(listUsers())
             //if don't login and if don't admin
         } else {

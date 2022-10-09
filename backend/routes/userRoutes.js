@@ -1,7 +1,7 @@
 import express from 'express'
 const router = express.Router()
 import { authUser, registerUser, getUserProfile, updateUserProfile, getUsers, deleteUser, getUserById, updateUser, deactivateUser, reActivateUser } from '../controllers/userController.js'
-import { protect, admin } from '../middleware/authMiddleware.js'
+import { tokenMiddleware, adminMiddleware } from '../middleware/authMiddleware.js'
 
 //all the functionality will go in the controller
 //Controller with all the functions and Routes just have the root and point to the specific controller functions
@@ -11,28 +11,23 @@ import { protect, admin } from '../middleware/authMiddleware.js'
 //rouut post 'login' and then we call authUser
 router.post('/login', authUser);
 
-router.route('/').post(registerUser).get(protect, admin, getUsers);
+router.route('/')
+    .post(registerUser)
+    .get(tokenMiddleware, adminMiddleware, getUsers);
 
 //we use router.route because we will be making more - making a GET req and a put req to update the user profile
-//getUserProfile I want to protect and this method that runs, so to implement middleware (put it as a first argument)
-router
-    .route('/profile')
-    .get(protect, getUserProfile)
-    .put(protect, updateUserProfile);
+//getUserProfile I want to token and this method that runs, so to implement middleware (put it as a first argument)
+router.route('/profile')
+    .get(tokenMiddleware, getUserProfile)
+    .put(tokenMiddleware, updateUserProfile);
 
-router
-    .route('/:id')
-    .delete(protect, admin, deleteUser)
-    .get(protect, admin, getUserById)
-    .put(protect, admin, updateUser);
+router.route('/:id')
+    .delete(tokenMiddleware, adminMiddleware, deleteUser)
+    .get(tokenMiddleware, adminMiddleware, getUserById)
+    .put(tokenMiddleware, adminMiddleware, updateUser);
 
-router
-    .route('/:id/deactivate')
-    .post(protect, admin, deactivateUser);
-
-router
-    .route('/:id/re-activate')
-    .post(protect, admin, reActivateUser);
+router.route('/:id/deactivate').post(tokenMiddleware, adminMiddleware, deactivateUser);
+router.route('/:id/re-activate').post(tokenMiddleware, adminMiddleware, reActivateUser);
 
 export default router;
 

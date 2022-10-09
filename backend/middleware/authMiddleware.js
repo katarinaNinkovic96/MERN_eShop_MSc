@@ -6,8 +6,18 @@ import asyncHandler from 'express-async-handler'
 
 import User from '../models/userModel.js'
 
+const activeCheck = (user) => {
+    if (user) {
+        if (!user.isActive && !user.isAdmin) {
+            throw new Error("User is not active");
+        }
+    } else {
+        throw new Error("User can't be found");
+    }
+}
+
 //this middleware function - req, res, next
-const protect = asyncHandler(async (req, res, next) => {
+const tokenMiddleware = asyncHandler(async (req, res, next) => {
 
     // initialize a variable called token
     let token;
@@ -21,8 +31,6 @@ const protect = asyncHandler(async (req, res, next) => {
 
             //only we dont return is password
             req.user = await User.findById(decoded.id).select('-password')
-
-            next();
         } catch (error) {
             console.error(error)
             res.status(401)
@@ -30,13 +38,18 @@ const protect = asyncHandler(async (req, res, next) => {
         }
     }
 
+    activeCheck(req.user);
+
     if (!token) {
         res.status(401)
         throw new Error('Not authoruzed, no token')
     }
+
+    // call next method at the end
+    next();
 })
 
-const admin = (req, res, next) => {
+const adminMiddleware = (req, res, next) => {
     if (req.user && req.user.isAdmin) {
         next()
     } else {
@@ -45,4 +58,4 @@ const admin = (req, res, next) => {
     }
 }
 
-export { protect, admin }
+export { activeCheck, tokenMiddleware, adminMiddleware };
