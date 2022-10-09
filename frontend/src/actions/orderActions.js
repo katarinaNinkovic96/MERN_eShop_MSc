@@ -16,7 +16,10 @@ import {
     orderListMyFail,
     orderListRequest,
     orderListSuccess,
-    orderListFail
+    orderListFail,
+    orderDeleteRequest,
+    orderDeleteSuccess,
+    orderDeleteFail
 } from '../reducers/orderReducers'
 
 import axios from 'axios';
@@ -64,6 +67,45 @@ export const createOrder = ( order ) => async (dispatch, getState) => {
         dispatch(orderCreateFail(error.response && error.response.data.message ? error.response.data.message : error.message))
     }
 }
+
+
+//delete order
+export const deleteOrder = (id) => async (dispatch, getState) => {
+    try {
+        //dispatch - the request
+        dispatch(orderDeleteRequest());
+
+        //destruction from getState which is a function
+        //we want to get the user login, but then we want to destruction another level and we want to get userInfo
+            //which is in user login
+        //that should give us access to the logged in users object
+        //we get userInfo
+        const {userLogin: { userInfo } } = getState()
+
+        //this is also where we will pass the token for protected routes, will set the authorization here for the token
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userInfo.token}`
+            }
+        }
+
+        //we will make our requests
+        //delete request
+        await axios.delete(`/api/orders/${id}`, config);
+
+        //we're going to pass the data, get in as the payload
+        dispatch(orderDeleteSuccess());
+
+    } catch (error) {
+        dispatch(orderDeleteFail(error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message))
+    }
+
+    // update order list
+    dispatch(listMyOrders());
+}
+
 
 
 

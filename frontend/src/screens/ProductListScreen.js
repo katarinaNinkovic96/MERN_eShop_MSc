@@ -45,15 +45,13 @@ const ProductListScreen = ({ history, match} ) => {
             dispatch(deleteProduct(id))
         }
     }
-    
 
     const createProductHandler = () => {
         //create product
         history.push('/admin/product/create');
     }
 
-  return (
-    <>
+    return <>
         <Row className='align-items-center'>
             <Col>
                 <h1>Products</h1>
@@ -65,16 +63,14 @@ const ProductListScreen = ({ history, match} ) => {
                 </Button>
             </Col>
         </Row>
-        {loadingDelete && <Loader />}
-        {errorDelete && <Message variant='danger'>{errorDelete}</Message>}
-        {loadingCreate && <Loader />}
-        {errorCreate && <Message variant='danger'>{errorCreate}</Message>}
-      {loading ? (
-        <Loader />
-        ) : error ? (
-            <Message variant='danger'>{error}</Message>
-        ) : (
-            <>
+        { loadingDelete && <Loader /> }
+        { errorDelete && <Message variant='danger'>{errorDelete}</Message> }
+        { loadingCreate && <Loader /> }
+        { errorCreate && <Message variant='danger'>{errorCreate}</Message> }
+        { loading ?
+        <Loader /> : error ?
+        <Message variant='danger'>{error}</Message> :
+        <>
             <Table striped hover responsive className='table-sm'>
                 <thead>
                     <tr>
@@ -100,7 +96,11 @@ const ProductListScreen = ({ history, match} ) => {
                                         <i className='fas fa-edit'></i>
                                     </Button>
                                 </LinkContainer>
-                                <Button variant='danger' className='btn-sm' onClick={() => deleteHandler(product._id)}>
+                                <Button
+                                    variant='danger'
+                                    className='btn-sm'
+                                    onClick={() => deleteHandler(product._id)}
+                                >
                                     <i className='fas fa-trash'></i>
                                 </Button>
                             </td>
@@ -109,10 +109,8 @@ const ProductListScreen = ({ history, match} ) => {
                 </tbody>
             </Table>
             <Paginate pages={pages} page={page} isAdmin={true}/>
-            </>
-        )}
-    </>
-  )
+        </> }
+    </>;
 }
 
 export default ProductListScreen;

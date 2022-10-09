@@ -38,6 +38,7 @@ import {
 
 import {
   orderCreateReducer,
+  orderDeleteReducer,
   orderDetailsReducer,
   orderPayReducer,
   orderDeliverReducer,
@@ -64,6 +65,7 @@ const store = configureStore({
     userDelete: userDeleteReducer,
     userUpdate: userUpdateReducer,
     orderCreate: orderCreateReducer,
+    orderDelete: orderDeleteReducer,
     orderDetails: orderDetailsReducer,
     orderPay: orderPayReducer,
     orderDeliver: orderDeliverReducer,

@@ -79,10 +79,10 @@ const productDeleteSlice = createSlice({
         
     },
     reducers: {
-        productDeleteRequest: (state, action) => {
+        productDeleteRequest: (state) => {
             state.loading = true;
         },
-        productDeleteSuccess: (state, action) => {
+        productDeleteSuccess: (state) => {
             state.loading = false;
             state.success = true;
         },

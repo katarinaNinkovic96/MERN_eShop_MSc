@@ -23,9 +23,33 @@ const orderCreateSlice = createSlice({
     }
 });
 
-
 export const orderCreateReducer = orderCreateSlice.reducer;
 export const { orderCreateRequest, orderCreateSuccess, orderCreateFail } = orderCreateSlice.actions;
+
+
+
+//delete order
+const orderDeleteSlice = createSlice({
+    name: 'order',
+    initialState: {
+    },
+    reducers: {
+        orderDeleteRequest: (state) => {
+            state.loading = true;
+        },
+        orderDeleteSuccess: (state) => {
+            state.loading = false;
+            state.success = true;
+        },
+        orderDeleteFail: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        }
+    }
+});
+
+export const orderDeleteReducer = orderDeleteSlice.reducer;
+export const { orderDeleteRequest, orderDeleteSuccess, orderDeleteFail } = orderDeleteSlice.actions;
 
 
 
