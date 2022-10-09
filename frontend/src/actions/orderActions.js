@@ -70,7 +70,7 @@ export const createOrder = ( order ) => async (dispatch, getState) => {
 
 
 //delete order
-export const deleteOrder = (id) => async (dispatch, getState) => {
+export const deleteOrder = (id, updateListFunc) => async (dispatch, getState) => {
     try {
         //dispatch - the request
         dispatch(orderDeleteRequest());
@@ -102,12 +102,9 @@ export const deleteOrder = (id) => async (dispatch, getState) => {
             : error.message))
     }
 
-    // update order list
-    dispatch(listMyOrders());
+    // call dispatch for passed update order list function
+    dispatch(updateListFunc());
 }
-
-
-
 
 export const getOrderDetails = ( id ) => async (dispatch, getState) => {
     try {

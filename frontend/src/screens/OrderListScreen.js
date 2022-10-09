@@ -5,7 +5,7 @@ import { Table, Button } from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../commponents/Message'
 import Loader from '../commponents/Loader'
-import { listOrders } from '../actions/orderActions'
+import { listOrders, deleteOrder } from '../actions/orderActions';
 
 
 const OrderListScreen = ({ history} ) => {
@@ -21,13 +21,18 @@ const OrderListScreen = ({ history} ) => {
     useEffect(() => {
         if(userInfo && userInfo.isAdmin ) {
             dispatch(listOrders())
-            //if don't login and if don't admin
         } else {
             //redirect to login
             history.push('/login')
         }
        
-    }, [dispatch, history, userInfo])
+    }, [dispatch, history, userInfo]);
+
+    const cancelHandler = (id) => {
+        if (window.confirm('Are you sure?')) {
+            dispatch(deleteOrder(id, listOrders))
+        }
+    }
 
   return (
     <>
@@ -43,6 +48,7 @@ const OrderListScreen = ({ history} ) => {
                     <th>TOTAL</th>
                     <th>PAID</th>
                     <th>DELIVERED</th>
+                    <th></th>
                     <th></th>
                 </tr>
             </thead>
@@ -73,6 +79,16 @@ const OrderListScreen = ({ history} ) => {
                                     Details
                                 </Button>
                             </LinkContainer>
+                        </td>
+                        <td>
+                            <Button
+                                className='btn-sm'
+                                variant='warning'
+                                disabled={order.isPaid}
+                                onClick={() => cancelHandler(order._id)}
+                            >
+                                Cancel
+                            </Button>
                         </td>
                     </tr>
                 ))}

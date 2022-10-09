@@ -88,7 +88,7 @@ const ProfileScreen = ({ history }) => {
 
     const cancelHandler = (id) => {
         if (window.confirm('Are you sure?')) {
-            dispatch(deleteOrder(id))
+            dispatch(deleteOrder(id, listMyOrders));
         }
     }
 

@@ -43,14 +43,35 @@ const addOrderItems = asyncHandler(async (req, res) => {
 // @route   DELETE /api/orders/:id
 // @access  Private
 const deleteOrder = asyncHandler(async (req, res) => {
-    const order = await Order.findById(req.params.id)
+    const order = await Order.findById(req.params.id);
+    let errorReason = false;
 
-    if(order){
-        await order.remove()
-        res.json({ message: 'Order removed'})
-    }else{
-        res.status(404)
-        throw new Error ('Order not found')
+    if (order) {
+        if (req.user) {
+            const id1 = req.user._id.toString().replace(/ObjectId\("(.*)"\)/, "$1");
+            const id2 = order.user.toString().replace(/ObjectId\("(.*)"\)/, "$1");
+
+            if (id1 === id2 || req.user.isAdmin) {
+                if (!order.isPaid) {
+                    await order.remove();
+                    res.json({ message: 'Order removed'});
+                } else {
+                    errorReason = "Order can't be removed because customer has paid";
+                }
+            } else {
+                errorReason = "User not authorized to delete order";
+            }
+        } else {
+            errorReason = 'User not found';
+        }
+    } else {
+        errorReason = 'Order not found';
+    }
+
+    if (errorReason) {
+        res.status(404);
+        throw new Error(errorReason);
+        // throw new Error ('Order not found')
     }
 })
 
