@@ -6,9 +6,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import Message from '../commponents/Message'
 import Loader from '../commponents/Loader'
 import { listUsers, deleteUser } from '../actions/userActions'
+// component
+import UserActiveButton from '../commponents/UserActiveButton'
 
-
-const UserListScreen = ({ history} ) => {
+const UserListScreen = ({ history } ) => {
     const dispatch = useDispatch();
 
     const userList = useSelector(state => state.userList)
@@ -39,11 +40,11 @@ const UserListScreen = ({ history} ) => {
         }
     }
 
-  return (
-    <>
-      <h1>Users</h1>
-      {loading ? <Loader /> : error ? <Message variant='danger'>{error}</Message>
-      : (
+    return <>
+        <h1>Users</h1>
+        { loading ?
+        <Loader /> : error ?
+        <Message variant='danger'>{error}</Message> :
         <Table striped hover responsive className='table-sm'>
             <thead>
                 <tr>
@@ -61,11 +62,9 @@ const UserListScreen = ({ history} ) => {
                         <td>{user.name}</td>
                         <td><a href={`mailto:${user.email}`}>{user.email}</a></td>
                         <td>
-                            {user.isAdmin ? (
-                                <i className='fas fa-check' style={{ color: 'green' }}></i>
-                            ) : (
-                                <i className='fas fa-times' style={{ color: 'red' }}></i>
-                            )}
+                            { user.isAdmin ?
+                            <i className='fas fa-check' style={{ color: 'green' }}></i> :
+                            <i className='fas fa-times' style={{ color: 'red' }}></i> }
                         </td>
                         <td>
                             <LinkContainer to={`/admin/user/${user._id}/edit`}>
@@ -73,17 +72,13 @@ const UserListScreen = ({ history} ) => {
                                     <i className='fas fa-edit'></i>
                                 </Button>
                             </LinkContainer>
-                            <Button variant='danger' className='btn-sm' onClick={() => deleteHandler(user._id)}>
-                                <i className='fas fa-trash'></i>
-                            </Button>
+                            <UserActiveButton user={user}/>
                         </td>
                     </tr>
                 ))}
             </tbody>
-        </Table>
-      )}
-    </>
-  )
+        </Table> }
+    </>;
 }
 
 export default UserListScreen;

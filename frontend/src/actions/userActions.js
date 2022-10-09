@@ -45,8 +45,6 @@ export const login = ( email, password ) => async (dispatch) => {
     }
 }
 
-
-
 //logout
 export const logout = () => async (dispatch) => {
     // clear localStorage
@@ -62,8 +60,6 @@ export const logout = () => async (dispatch) => {
     dispatch(orderListMyReset());
     dispatch(cartReset());
 }
-
-
 
 //register
 export const register = ( name, email, password ) => async (dispatch) => {
@@ -110,7 +106,6 @@ export const register = ( name, email, password ) => async (dispatch) => {
     }
 }
 
-
 //details
 //we need to send a token so I', going to say getState here, because we can get our user info from getState, 
     //which has the token in it.
@@ -151,7 +146,6 @@ export const getUserDetails = ( id ) => async (dispatch, getState) => {
     }
 }
 
-
 //UpdateProfile
 //this is going to take in the entire user object
 export const updateUserProfile = ( user ) => async (dispatch, getState) => {
@@ -182,7 +176,6 @@ export const updateUserProfile = ( user ) => async (dispatch, getState) => {
         //put request
         const { data } = await axios.put( '/api/users/profile', user, config);
 
-
         //we're going to pass the data, get in as the payload
         dispatch(userUpdateProfileSuccess(data));
 
@@ -196,7 +189,6 @@ export const updateUserProfile = ( user ) => async (dispatch, getState) => {
         dispatch(userUpdateProfileFail(error.response && error.response.data.message ? error.response.data.message : error.message))
     }
 }
-
 
 //List users
 //it's not going to take anything in
@@ -225,7 +217,6 @@ export const listUsers = () => async (dispatch, getState) => {
         //get request
         const { data } = await axios.get( '/api/users', config);
 
-
         //we're going to pass the data, get in as the payload
         dispatch(userListSuccess(data));
 
@@ -233,7 +224,6 @@ export const listUsers = () => async (dispatch, getState) => {
         dispatch(userListFail(error.response && error.response.data.message ? error.response.data.message : error.message))
     }
 }
-
 
 //Delete user
 export const deleteUser = (id) => async (dispatch, getState) => {
@@ -271,8 +261,6 @@ export const deleteUser = (id) => async (dispatch, getState) => {
     // update user list
     dispatch(listUsers());
 }
-
-
 
 //Update user
 export const updateUser = (user) => async (dispatch, getState) => {
@@ -312,6 +300,48 @@ export const updateUser = (user) => async (dispatch, getState) => {
     }
 }
 
+// Deactivate user
+export const deactivateUser = (id) => async (dispatch, getState) => {
+    try {
+        dispatch(userDeleteRequest());
 
+        const { userLogin: { userInfo } } = getState();
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userInfo.token}`,
+            }
+        }
 
+        await axios.post( `/api/users/${id}/deactivate`, null, config);
 
+        dispatch(userDeleteSuccess());
+    } catch (error) {
+        dispatch(userDeleteFail(error.response && error.response.data.message ? error.response.data.message : error.message))
+    }
+
+    // update user list
+    dispatch(listUsers());
+}
+
+// Re-activate user
+export const reActivateUser = (id) => async (dispatch, getState) => {
+    try {
+        dispatch(userDeleteRequest());
+
+        const { userLogin: { userInfo } } = getState();
+        const config = {
+            headers: {
+                Authorization: `Bearer ${userInfo.token}`,
+            }
+        }
+
+        await axios.post( `/api/users/${id}/re-activate`, null, config);
+
+        dispatch(userDeleteSuccess());
+    } catch (error) {
+        dispatch(userDeleteFail(error.response && error.response.data.message ? error.response.data.message : error.message))
+    }
+
+    // update user list
+    dispatch(listUsers());
+}

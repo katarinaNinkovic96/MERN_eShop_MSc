@@ -225,5 +225,42 @@ const updateUser = asyncHandler(async (req, res) => {
  })
 
 
-export { authUser, registerUser, getUserProfile, updateUserProfile, getUsers, deleteUser, getUserById, updateUser }
+// @desc    Deactivate user
+// @route   POST /api/users/:id/deactivate
+// @access  Private/Admin
+const deactivateUser = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id);
+
+    if (user) {
+        if (!user.isAdmin) {
+            user.isActive = false;
+            await user.save();
+            res.json({ message: 'User deactivated '});
+        } else {
+            res.status(404);
+            throw new Error ("User can't be deactivated, because it's admin");
+        }
+    } else {
+        res.status(404);
+        throw new Error ('User not found');
+    }
+ })
+
+// @desc    Re-activate user
+// @route   POST /api/users/:id/re-activate
+// @access  Private/Admin
+const reActivateUser = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id);
+
+    if (user) {
+        user.isActive = true;
+        await user.save();
+        res.json({ message: 'User re-activated '});
+    } else {
+        res.status(404);
+        throw new Error ('User not found');
+    }
+ })
+
+export { authUser, registerUser, getUserProfile, updateUserProfile, getUsers, deleteUser, getUserById, updateUser, deactivateUser, reActivateUser }
 

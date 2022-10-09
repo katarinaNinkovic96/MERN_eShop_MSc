@@ -1,6 +1,6 @@
 import express from 'express'
 const router = express.Router()
-import { authUser, registerUser, getUserProfile, updateUserProfile, getUsers, deleteUser, getUserById, updateUser } from '../controllers/userController.js'
+import { authUser, registerUser, getUserProfile, updateUserProfile, getUsers, deleteUser, getUserById, updateUser, deactivateUser, reActivateUser } from '../controllers/userController.js'
 import { protect, admin } from '../middleware/authMiddleware.js'
 
 //all the functionality will go in the controller
@@ -26,6 +26,14 @@ router
     .get(protect, admin, getUserById)
     .put(protect, admin, updateUser);
 
-export default router
+router
+    .route('/:id/deactivate')
+    .post(protect, admin, deactivateUser);
+
+router
+    .route('/:id/re-activate')
+    .post(protect, admin, reActivateUser);
+
+export default router;
 
 //after we bring this use routs into the server
