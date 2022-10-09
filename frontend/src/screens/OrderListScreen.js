@@ -34,11 +34,11 @@ const OrderListScreen = ({ history} ) => {
         }
     }
 
-  return (
-    <>
-      <h1>Orders</h1>
-      {loading ? <Loader /> : error ? <Message variant='danger'>{error}</Message>
-      : (
+    return <>
+        <h1>Orders</h1>
+        { loading ?
+        <Loader /> : error ?
+        <Message variant='danger'>{error}</Message> :
         <Table striped hover responsive className='table-sm'>
             <thead>
                 <tr>
@@ -53,25 +53,21 @@ const OrderListScreen = ({ history} ) => {
                 </tr>
             </thead>
             <tbody>
-                {orders.map(order => (
+                { orders.map(order => (
                     <tr key={order._id}>
                         <td>{order._id}</td>
-                        <td>{order.user && order.user.name}</td>
+                        <td>{order.user ? order.user.name : "unknown user"}</td>
                         <td>{order.createdAt.substring(0, 10)}</td>
                         <td>{order.totalPrice}€</td>
                         <td>
-                            {order.isPaid ? (
-                                order.paidAt.substring(0, 10)
-                            ) : (
-                                <i className='fas fa-times' style={{ color: 'red' }}></i>
-                            )}
+                            { order.isPaid ?
+                            <span>{order.paidAt.substring(0, 10)}</span> :
+                            <i className='fas fa-times' style={{ color: 'red' }}></i> }
                         </td>
                         <td>
-                            {order.isDelivered ? (
-                                order.deliveredAt.substring(0, 10)
-                            ) : (
-                                <i className='fas fa-times' style={{ color: 'red' }}></i>
-                            )}
+                            { order.isDelivered ?
+                            <span>{order.deliveredAt.substring(0, 10)}</span> :
+                            <i className='fas fa-times' style={{ color: 'red' }}></i> }
                         </td>
                         <td>
                             <LinkContainer to={`/order/${order._id}`}>
@@ -91,12 +87,10 @@ const OrderListScreen = ({ history} ) => {
                             </Button>
                         </td>
                     </tr>
-                ))}
+                )) }
             </tbody>
-        </Table>
-      )}
-    </>
-  )
+        </Table> }
+    </>;
 }
 
 export default OrderListScreen;
