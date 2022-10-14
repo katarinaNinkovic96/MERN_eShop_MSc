@@ -6,6 +6,9 @@ import { activeCheck } from '../middleware/authMiddleware.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
+import sgMail from '@sendgrid/mail'; // SENDGRID_API_KEY
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
 // @desc    Auth user & get token
 // @route   POST /api/users/login
 // @access  Public
