@@ -1,4 +1,7 @@
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
+
+import dotenv from 'dotenv';
+dotenv.config();
 
 //we take user ID because thats what we want to add as the payload in this token
 const generateToken = (id) => {

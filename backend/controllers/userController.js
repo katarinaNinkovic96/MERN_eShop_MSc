@@ -1,7 +1,10 @@
-import asyncHandler from 'express-async-handler'
-import User from '../models/userModel.js'
-import generateToken from '../utils/generateToken.js'
+import asyncHandler from 'express-async-handler';
+import User from '../models/userModel.js';
+import generateToken from '../utils/generateToken.js';
 import { activeCheck } from '../middleware/authMiddleware.js';
+
+import dotenv from 'dotenv';
+dotenv.config();
 
 // @desc    Auth user & get token
 // @route   POST /api/users/login
