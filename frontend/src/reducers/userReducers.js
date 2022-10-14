@@ -44,19 +44,24 @@ const userRegisterSlice = createSlice({
     },
     reducers: {
         userRegisterRequest: (state) => {
+            state.sucess = false;
             state.loading = true;
+            state.error = false;
         },
         userRegisterSuccess: (state, action) => {
             state.loading = false;
-            state.userInfo = action.payload;
+            state.success = action.payload;
+            state.error = false;
         },
         userRegisterFail: (state, action) => {
             state.loading = false;
             state.error = action.payload;
+            state.success = false;
         },
         userRegisterReset: (state) => {
             state.loading = false;
             state.error = false;
+            state.success = false;
         }
     }
 });

@@ -8,10 +8,9 @@ import { Row, Col, Button, Form} from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../commponents/Message'
 import Loader from '../commponents/Loader'
-import { register } from '../actions/userActions'
-import { userRegisterReset } from '../reducers/userReducers';
+import { preRegister } from '../actions/userActions'
+import { userRegisterReset, userRegisterFail } from '../reducers/userReducers';
 import FormContainer from '../commponents/FormContainer'
-    
     
 const RegisterScreen = ({ location, history }) => {
     //set some component level state, so basicilly for out fields and we're going to have just name, email and password
@@ -20,18 +19,20 @@ const RegisterScreen = ({ location, history }) => {
     const [ email, setEmail ] = useState('')
     const [ password, setPassword ] = useState('')
     const [ confirmPassword, setConfirmPassword ] = useState('')
-    const [ message, setMessage ] = useState(null)
 
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
 
     //we get from our state the userRegister, part of our state
     const userRegister = useSelector( state => state.userRegister)
-    const { loading, error, userInfo } = userRegister
+    const { loading, error, success } = userRegister;
+
+    const userLogin = useSelector( state => state.userLogin);
+    const { userInfo } = userLogin;
 
     //we want to check that location.search beacuse that's going to have the URL a query string
     //if that exists, then let's take location.search anf let's split which is going to turn it into an array split by '='
         //we want rhe one index which willbe to the right of the equals sign
-    const redirect = location.search ? location.search.split('=')[1] : '/'
+    const redirect = location.search ? location.search.split('=')[1] : '/';
 
     //I want to redirect if we aew already logged in, I don't want to be able to come to the login screen if we're already logged in.
     // add useEffect
@@ -40,7 +41,7 @@ const RegisterScreen = ({ location, history }) => {
 
         //check for userInfo, if userInfo exists (null if we're not logged in) let's take our props history and call push
         //we want to go to wharever is in redirect 
-        if(userInfo) {
+        if (userInfo) {
             history.push(redirect)
         }
         //dependencies - history, userInfo(beacuse of that changes we want to redirect), redirect
@@ -54,18 +55,18 @@ const RegisterScreen = ({ location, history }) => {
 
         //we want to check for the passwords first
         if(password !== confirmPassword) {
-            setMessage('Passwords do not match')
+            dispatch(userRegisterFail('Passwords do not match'));
         } else {
-            dispatch(register( name, email, password ))
+            dispatch(preRegister( name, email, password ))
         }
     }
 
     return (
     <FormContainer>
         <h1>Sign Up</h1>
-        {message && <Message variant='danger'>{message}</Message>}
-        {error && <Message variant='danger'>{error}</Message>}
-        {loading && <Loader />}
+        { loading && <Loader /> }
+        { (!loading && success) && <Message variant="success">{success.line1}<br/>{success.line2}</Message> }
+        { (!loading && !!error) && <Message variant='danger'>{error}</Message> }
         <Form onSubmit={submitHandler} autoComplete="on">
             <Form.Group controlId='name'>
                 <Form.Label>Name</Form.Label>

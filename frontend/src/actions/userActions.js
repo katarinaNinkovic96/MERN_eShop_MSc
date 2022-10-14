@@ -61,8 +61,32 @@ export const logout = () => async (dispatch) => {
     dispatch(cartReset());
 }
 
-//register
-export const register = ( name, email, password ) => async (dispatch) => {
+// pre register action for new user
+export const preRegister = ( name, email, password ) => async (dispatch) => {
+    try {
+        dispatch(userRegisterRequest());
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+
+        const { data } = await axios.post(
+            '/api/users/pre-register',
+            { name, email, password },
+            config
+        );
+
+        dispatch(userRegisterSuccess(data));
+
+    } catch (error) {
+        dispatch(userRegisterFail(error.response && error.response.data.message ? error.response.data.message : error.message))
+    }
+}
+
+// register new user
+export const register = (token) => async (dispatch) => {
     try {
 
         //dispatch - the request
@@ -82,24 +106,14 @@ export const register = ( name, email, password ) => async (dispatch) => {
         //post request
         //we want to pass in, want name, email, pass
         const { data } = await axios.post(
-            //'/api/users' - where we made/created the row
-            '/api/users',
-            { name, email, password },
+            '/api/users/register',
+            { token },
             config
         );
 
         //we want to dispatch our user login success
         //we're going to pass the data, get in as the payload
         dispatch(userRegisterSuccess(data));
-
-        //is log the user in right away when they register 
-        //when we login pr when we regoster, we're getting the same thing back, the user data with the token
-        dispatch(userLoginSuccess(data));
-
-        //set our user to local storage
-        //we want json.stringify because we are saving the local storage, so has to be a string pass in data
-            //it is going to be the user object
-        localStorage.setItem(`userInfo`, JSON.stringify(data))
 
     } catch (error) {
         dispatch(userRegisterFail(error.response && error.response.data.message ? error.response.data.message : error.message))

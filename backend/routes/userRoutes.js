@@ -1,19 +1,20 @@
 import express from 'express'
-const router = express.Router()
-import { authUser, registerUser, getUserProfile, updateUserProfile, getUsers, deleteUser, getUserById, updateUser, deactivateUser, reActivateUser } from '../controllers/userController.js'
+const router = express.Router();
+
+import { authUser, registerUser, preRegisterUser, getUserProfile, updateUserProfile, getUsers, deleteUser, getUserById, updateUser, deactivateUser, reActivateUser } from '../controllers/userController.js'
 import { tokenMiddleware, adminMiddleware } from '../middleware/authMiddleware.js'
 
 //all the functionality will go in the controller
 //Controller with all the functions and Routes just have the root and point to the specific controller functions
 
+router.route('/').get(tokenMiddleware, adminMiddleware, getUsers);
+
 //we only going to have a post req to users login because we use router.post
 //we use '/login' because this is going to be hooked to /api/users
-//rouut post 'login' and then we call authUser
+//route post 'login' and then we call authUser
 router.post('/login', authUser);
-
-router.route('/')
-    .post(registerUser)
-    .get(tokenMiddleware, adminMiddleware, getUsers);
+router.post('/pre-register', preRegisterUser);
+router.post('/register', registerUser);
 
 //we use router.route because we will be making more - making a GET req and a put req to update the user profile
 //getUserProfile I want to token and this method that runs, so to implement middleware (put it as a first argument)

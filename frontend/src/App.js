@@ -18,6 +18,7 @@ import UserEditScreen from './screens/UserEditScreen';
 import ProductListScreen from './screens/ProductListScreen';
 import ProductManageScreen from './screens/ProductManageScreen';
 import OrderListScreen from './screens/OrderListScreen';
+import EmailActivationScreen from './screens/EmailActivationScreen';
 
 const App = () => {
   return (
@@ -44,6 +45,7 @@ const App = () => {
           <Route path='/search/:keyword' component={HomeScreen} exact />
           <Route path='/page/:pageNumber' component={HomeScreen} exact />
           <Route path='/search/:keyword/page/:pageNumber' component={HomeScreen} exact />
+          <Route path='/auth/account/activate/:token' component={EmailActivationScreen} />
           <Route path='/' component={HomeScreen} exact />
         </Container>
       </main>

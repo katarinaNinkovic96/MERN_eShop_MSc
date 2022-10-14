@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import User from '../models/userModel.js';
 import generateToken from '../utils/generateToken.js';
+import jwt from 'jsonwebtoken';
 import { activeCheck } from '../middleware/authMiddleware.js';
 
 import dotenv from 'dotenv';
@@ -50,9 +51,66 @@ const authUser = asyncHandler(async (req, res) => {
 
 })
 
+// @desc    Pre-Register a new user
+// @route   POST /api/users/pre-register
+// @access  Public
+export const preRegisterUser = asyncHandler(async(req, res) => {
+    const { name, email, password } = req.body;
+
+    // check does user already exist
+    const userExists = await User.findOne({ email: email.toLowerCase() });
+    if (userExists) {
+        //error 400 is bad request
+        res.status(400);
+        throw new Error('User already exists');
+    }
+
+    // create new user
+    const user = await User.create({
+        name,
+        email,
+        password
+    });
+
+    // check is user succesfully created
+    if (!user) {
+        res.status(400);
+        throw new Error('Invalid user data');
+    }
+
+    // form activation e-mail content
+    const token = jwt.sign({ email: email.toLowerCase() }, process.env.JWT_ACCOUNT_ACTIVATION, { expiresIn: '10m' });
+    const CLIENT_URL = (process.env.NODE_ENV === 'development') ? process.env.CLIENT_URL_DEV : process.env.CLIENT_URL_PROD;
+    const emailData = {
+        to: email,
+        from: `${process.env.SENDGRID_SENDER_MAIL}`,
+        subject: `Account activation link`,
+        html: `
+            <p>Please use the following link to activate your account:</p>
+            <p>${CLIENT_URL}/auth/account/activate/${token}</p>
+            <hr/>
+            <p>This email may contain sensetive information</p>
+            <p>${CLIENT_URL}</p>
+        `
+    };
+
+    sgMail
+        .send(emailData)
+        .then(() => {
+            return res.json({
+                line1: `Email has been sent to ${email}.`,
+                line2: "Follow the instructions to activate your account."
+            })
+        })
+        .catch((errorMessage) => {
+            console.error("error occured on sgMail send: ", errorMessage);
+            res.status(401);
+            throw new Error(`Failed to send account activation e-mail.\n${errorMessage}`);
+        });
+})
 
 // @desc    Register a new user
-// @route   POST /api/users
+// @route   POST /api/users/register
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
 
@@ -61,44 +119,64 @@ const registerUser = asyncHandler(async (req, res) => {
     //req.body will be able to access like req body email,name, body pass...
     //for this we need body parser in server.js - app.use(express.json())
 
-    //structure that data from req body, I want pull out the name, email and pass (yhose three pieces of data from the body)
-    const { name, email, password } = req.body
-
-    //we want to find one document it by email
-    //const user = await User.find({ email : email}) because is match we write only one email
-    //we want to find email that matches with email in req body (line up)
-    const userExists = await User.findOne({ email})
-
-    //error 400 is bad request
-    if(userExists) {
-        res.status(400)
-        throw new Error('Users already exists')
+    // check does token exist
+    const token = req.body.token;
+    if (!token) {
+        throw new Error("Missing token key in JSON object/body");
     }
 
-    //if I write only password - this password is unencrypted, its just plain text why we use Mangus middleware to encrypt it.
-    //create like save
-    const user  = await User.create({
-        name,
-        email,
-        password
-    })
+    // decode token to get email
+    let decoded;
+    try {
+        decoded = jwt.verify(token, process.env.JWT_ACCOUNT_ACTIVATION);
+    } catch (error) {
+        res.status(401);
+        if(error.name === 'TokenExpiredError') {
+            // find user anyway
+            const { email } = jwt.verify(token, process.env.JWT_ACCOUNT_ACTIVATION, { ignoreExpiration: true });
+            const user = await User.findOne({ email });
 
-    //if user creite, if everithing goes ok
-    //status 201 which means somethiing was created
-    if(user) {
-        res.status(201).json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            isAdmin: user.isAdmin,
-            token: generateToken(user._id)
-        })
-    } else {
-        res.status(400)
-        throw new Error('Invalid user data')
-    }   
+            // check is user already verified
+            if (user.isVerified) {
+                // just throw error if it is verified
+                res.status(400);
+                throw new Error("User account has already been verified.");
+            } else {
+                // remove account if it is not
+                await user.remove();
+                throw new Error("Token has been expired. Register once again.");
+            }
+        }
+        throw error;
+    }
+
+    //we want to find email that matches with email in req body (line up)
+    const { email } = decoded;
+    const user = await User.findOne({ email });
+
+    //error 400 is bad request
+    if (!user) {
+        res.status(400);
+        throw new Error("User doesn't exists.");
+    } else if (user.isVerified) {
+        res.status(400);
+        throw new Error("User account has already been verified.");
+    }
+
+    user.isActive = true;
+    user.isVerified = true;
+
+    const result = await user.save();
+    if (!result) {
+        res.status(400);
+        throw new Error('Invalid user data');
+    }
+
+    res.json({
+        line1: "Congratulations!",
+        line2: "You have been successfully activated account"
+    });
 })
-
 
 // @desc    Get user profile
 // @route   GET /api/users/profile
