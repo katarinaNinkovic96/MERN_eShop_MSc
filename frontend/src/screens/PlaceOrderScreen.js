@@ -1,10 +1,15 @@
 import React, { useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { Button, Row, Col, ListGroup, Image, Card} from 'react-bootstrap'
 //import useDispatch and useSelector so we can deal with our redux state
 import { useDispatch, useSelector } from 'react-redux'
+
+// components
 import Message from '../commponents/Message'
 import ChechoutSteps from '../commponents/ChechoutSteps'
-import { Link } from 'react-router-dom'
+import Loader from '../commponents/Loader'
+
+// actions
 import { createOrder } from '../actions/orderActions'
 
 const PlaceOrderScreen = ({ history }) => {
@@ -32,15 +37,8 @@ const PlaceOrderScreen = ({ history }) => {
     ).toFixed(2);
 
     const orderCreate = useSelector((state) => state.orderCreate);
-    const { order, success, error } = orderCreate;
+    const { loading, error } = orderCreate;
 
-    useEffect(() => {
-        if(success) {
-            history.push(`/order/${order._id}`)
-        }
-        //eslint-disable-next-line
-    }, [history, success])
-   
     const placeOrderHandler = () => {
         dispatch(createOrder({
             orderItems: cart.cartItems,
@@ -50,7 +48,7 @@ const PlaceOrderScreen = ({ history }) => {
             shippingPrice,
             taxPrice,
             totalPrice
-        }))
+        }, history))
     }
 
   return (
@@ -144,6 +142,8 @@ const PlaceOrderScreen = ({ history }) => {
                         </ListGroup.Item>
 
                         <ListGroup.Item>
+                            { loading ?
+                            <Loader/> :
                             <Button
                                 type='button'
                                 className='btn-block'
@@ -151,7 +151,7 @@ const PlaceOrderScreen = ({ history }) => {
                                 onClick={placeOrderHandler}
                             >
                                 Place Order
-                            </Button>
+                            </Button> }
                         </ListGroup.Item>
                     </ListGroup>
                 </Card>

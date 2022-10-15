@@ -1,7 +1,7 @@
 import express from 'express'
 const router = express.Router()
 import {
-    addOrderItems,
+    createOrder,
     deleteOrder,
     getOrderByID,
     updateOrderToPaid,
@@ -15,7 +15,7 @@ import { tokenMiddleware, adminMiddleware } from '../middleware/authMiddleware.j
 //Controller with all the functions and Routes just have the root and point to the specific controller functions
 
 router.route('/')
-    .post(tokenMiddleware, addOrderItems)
+    .post(tokenMiddleware, createOrder)
     .get(tokenMiddleware, adminMiddleware, getOrders);
 
 router.route('/myorders').get(tokenMiddleware, getMyOrders);

@@ -8,13 +8,13 @@ const orderCreateSlice = createSlice({
 
     },
     reducers: {
-        orderCreateRequest: (state, action) => {
+        orderCreateRequest: (state) => {
             state.loading = true;
+            state.error = false;
         },
-        orderCreateSuccess: (state, action) => {
+        orderCreateSuccess: (state) => {
             state.loading = false;
-            state.success = true;
-            state.order = action.payload;
+            state.error = false;
         },
         orderCreateFail: (state, action) => {
             state.loading = false;

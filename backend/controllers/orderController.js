@@ -2,11 +2,20 @@ import asyncHandler from 'express-async-handler';
 //import { restart } from 'nodemon';
 import Order from '../models/orderModel.js';
 import Product from '../models/productModel.js';
+import User from '../models/userModel.js';
+
+import dotenv from 'dotenv';
+dotenv.config();
+
+import sgMail from '@sendgrid/mail'; // SENDGRID_API_KEY
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+const CLIENT_URL = (process.env.NODE_ENV === 'development') ? process.env.CLIENT_URL_DEV : process.env.CLIENT_URL_PROD;
 
 // @desc    Create new order
 // @route   POST /api/orders
 // @access  Private
-const addOrderItems = asyncHandler(async (req, res) => {
+const createOrder = asyncHandler(async (req, res) => {
     const { 
         orderItems, 
         shippingAddress, 
@@ -50,7 +59,30 @@ const addOrderItems = asyncHandler(async (req, res) => {
     }
 
     const createdOrder = await order.save();
-    res.status(201).json(createdOrder);
+
+    const orderId = createdOrder._id.toString().replace(/ObjectId\("(.*)"\)/, "$1");
+    const emailData = {
+        to: req.user.email,
+        from: `${process.env.SENDGRID_SENDER_MAIL}`,
+        subject: `Order ${orderId} created`,
+        html: `
+            <p>Follow order status <a href="${CLIENT_URL}/order/${orderId}">here</a></p>
+            <hr/>
+            <p>This email may contain sensetive information</p>
+            <p>${CLIENT_URL}</p>
+        `
+    };
+
+    sgMail
+        .send(emailData)
+        .then(() => {
+            return res.status(201).json({message: `Order ${orderId} created`});
+        })
+        .catch((errorMessage) => {
+            console.error("error occured on sgMail send: ", errorMessage);
+            res.status(401);
+            throw new Error(`Failed to send account activation e-mail.\n${errorMessage}`);
+        });
 });
 
 // @desc    Delete a order
@@ -90,10 +122,42 @@ const deleteOrder = asyncHandler(async (req, res) => {
         }
     }
 
+    // make sure to send email to owner of order, not to admin
+    let email;
+    const orderOwnerId = order.user.toString().replace(/ObjectId\("(.*)"\)/, "$1");
+    if (orderOwnerId === req.user._id) {
+        email = req.user.email;
+    } else {
+        const orderOwner = await User.findById(orderOwnerId);
+        email = orderOwner.email;
+    }
+
+    const orderId = order._id.toString().replace(/ObjectId\("(.*)"\)/, "$1");
+    const emailData = {
+        to: email,
+        from: `${process.env.SENDGRID_SENDER_MAIL}`,
+        subject: `Order ${orderId} cancelled`,
+        html: `
+            <p>We're sorry to hear that your order has been cancelled.</p>
+            <hr/>
+            <p>This email may contain sensetive information</p>
+            <p>${CLIENT_URL}</p>
+        `
+    };
+
     // remove order
     await order.remove();
-    res.json({ message: 'Order removed'});
-})
+    sgMail
+        .send(emailData)
+        .then(() => {
+            return res.json({ message: 'Order removed'});
+        })
+        .catch((errorMessage) => {
+            console.error("error occured on sgMail send: ", errorMessage);
+            res.status(401);
+            throw new Error(`Failed to send account activation e-mail.\n${errorMessage}`);
+        });
+});
 
 // @desc    Get order by ID
 // @route   GET /api/orders/:id
@@ -117,26 +181,49 @@ const getOrderByID = asyncHandler(async (req, res) => {
 const updateOrderToPaid = asyncHandler(async (req, res) => {
     //we have id by URL - req.params.id
     const order = await Order.findById(req.params.id)
-    if (order) {
-        order.isPaid = true;
-        order.paidAt = Date.now();
-        
-        //paymentResult - come from PayPal
-        order.paymentResult = {
-            //going to come from the PayPal response
-            id: req.body.id,
-            status: req.body.status,
-            update_time: req.body.update_time,
-            email_address: req.body.payer.email_address
-        }
-
-        //stuff in order - we want to save it in the database
-        const updatedOrder = await order.save()
-        res.json(updatedOrder);
-    } else {
-        res.status(404)
-        throw new Error('Order not found')
+    if (!order) {
+        res.status(404);
+        throw new Error('Order not found');
     }
+    order.isPaid = true;
+    order.paidAt = Date.now();
+
+    //paymentResult - come from PayPal
+    order.paymentResult = {
+        //going to come from the PayPal response
+        id: req.body.id,
+        status: req.body.status,
+        update_time: req.body.update_time,
+        email_address: req.body.payer.email_address
+    }
+
+    const emailData = {
+        to: req.user.email,
+        from: `${process.env.SENDGRID_SENDER_MAIL}`,
+        subject: `Order ${req.params.id} succesfully paid`,
+        html: `
+            <p>We're happy to inform you that order is succesfully paid.</p>
+            <p>You'll soon be informed by admin when product will be delivered.</p>
+            <br/>
+            <p>Follow order status <a href="${CLIENT_URL}/order/${req.params.id}">here</a></p>
+            <hr/>
+            <p>This email may contain sensetive information</p>
+            <p>${CLIENT_URL}</p>
+        `
+    };
+
+    //stuff in order - we want to save it in the database
+    const updatedOrder = await order.save();
+    sgMail
+        .send(emailData)
+        .then(() => {
+            return res.json(updatedOrder);
+        })
+        .catch((errorMessage) => {
+            console.error("error occured on sgMail send: ", errorMessage);
+            res.status(401);
+            throw new Error(`Failed to send account activation e-mail.\n${errorMessage}`);
+        });
 });
 
 // @desc    Update order to delivered
@@ -146,17 +233,42 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
     //we have id by URL - req.params.id
     const order = await Order.findById(req.params.id)
 
-    if (order) {
-        order.isDelivered = true;
-        order.deliveredAt = Date.now();
-
-        //stuff in order - we want to save it in the database
-        const updatedOrder = await order.save()
-        res.json(updatedOrder);
-    } else {
-        res.status(404)
-        throw new Error('Order not found')
+    if (!order) {
+        res.status(404);
+        throw new Error('Order not found');
     }
+    order.isDelivered = true;
+    order.deliveredAt = Date.now();
+
+    // make sure to send email to owner of order, not to admin
+    const orderOwnerId = order.user.toString().replace(/ObjectId\("(.*)"\)/, "$1");
+    const orderOwner = await User.findById(orderOwnerId);
+
+    const emailData = {
+        to: orderOwner.email,
+        from: `${process.env.SENDGRID_SENDER_MAIL}`,
+        subject: `Order ${req.params.id} delivered`,
+        html: `
+            <p>Just disclaimer that order has been succesfully delivered.</p>
+            <p>Enjoy your new stuff :)</p>
+            <hr/>
+            <p>This email may contain sensetive information</p>
+            <p>${CLIENT_URL}</p>
+        `
+    };
+
+    //stuff in order - we want to save it in the database
+    const updatedOrder = await order.save();
+    sgMail
+        .send(emailData)
+        .then(() => {
+            return res.json(updatedOrder);
+        })
+        .catch((errorMessage) => {
+            console.error("error occured on sgMail send: ", errorMessage);
+            res.status(401);
+            throw new Error(`Failed to send account activation e-mail.\n${errorMessage}`);
+        });
 });
 
 // @desc    Get logged in user orders
@@ -182,4 +294,4 @@ const getOrders = asyncHandler(async (req, res) => {
     
 });
 
-export { addOrderItems, deleteOrder, getOrderByID, updateOrderToPaid, updateOrderToDelivered, getMyOrders, getOrders }
+export { createOrder, deleteOrder, getOrderByID, updateOrderToPaid, updateOrderToDelivered, getMyOrders, getOrders }

@@ -26,7 +26,7 @@ import { cartReset } from '../reducers/cartReducers';
 
 import axios from 'axios';
 
-export const createOrder = ( order ) => async (dispatch, getState) => {
+export const createOrder = ( order, history ) => async (dispatch, getState) => {
     try {
 
         //dispatch - the request
@@ -55,14 +55,14 @@ export const createOrder = ( order ) => async (dispatch, getState) => {
         //put request
         const { data } = await axios.post( '/api/orders', order, config);
 
-
-        //we're going to pass the data, get in as the payload
-        dispatch(orderCreateSuccess(data));
-
         // clear the cart after successfull order
         dispatch(cartReset());
         localStorage.removeItem('cartItems');
 
+        dispatch(orderCreateSuccess());
+
+        // forward to order page
+        history.push(`/order/${data._id}`);
     } catch (error) {
         dispatch(orderCreateFail(error.response && error.response.data.message ? error.response.data.message : error.message))
     }

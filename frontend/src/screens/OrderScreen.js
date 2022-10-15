@@ -110,7 +110,7 @@ const OrderScreen = ({ match, history }) => {
                             <ListGroup.Item>
                                 <h2>Shipping</h2>
                                 <p>
-                                    <strong>Name: </strong> {order.user.email}
+                                    <strong>Name: </strong> {order.user.name}
                                 </p>
                                 <p>
                                     <strong>Email: </strong> {' '}
