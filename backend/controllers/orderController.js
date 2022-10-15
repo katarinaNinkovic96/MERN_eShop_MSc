@@ -1,7 +1,7 @@
-import asyncHandler from 'express-async-handler'
-//import { restart } from 'nodemon'
-import Order from '../models/orderModel.js'
-import Product from '../models/productModel.js'
+import asyncHandler from 'express-async-handler';
+//import { restart } from 'nodemon';
+import Order from '../models/orderModel.js';
+import Product from '../models/productModel.js';
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -20,62 +20,80 @@ const addOrderItems = asyncHandler(async (req, res) => {
     if (orderItems && orderItems.length === 0) {
         res.status(400);
         throw new Error ('No order items')
-    } else {
-        const order = new Order ({
-            orderItems,
-            //user because is private- protected with id
-            user: req.user._id, 
-            shippingAddress, 
-            paymentMethod, 
-            itemsPrice, 
-            taxPrice, 
-            shippingPrice,
-            totalPrice  
-        })
-
-        const createdOrder = await order.save()
-        res.status(201).json(createdOrder);
     }
-});
+    const order = new Order ({
+        orderItems,
+        //user because is private- protected with id
+        user: req.user._id,
+        shippingAddress,
+        paymentMethod,
+        itemsPrice,
+        taxPrice,
+        shippingPrice,
+        totalPrice
+    });
 
+    if (!order) {
+        res.status(401);
+        throw new Error("Can't create order");
+    }
+
+    // iterate through all items and take them from the stock
+    for (let i=0; i<order.orderItems.length; i++) {
+        const item = order.orderItems[i];
+        const productId = item.product.toString().replace(/ObjectId\("(.*)"\)/, "$1");
+        const product = await Product.findById(productId);
+        if (product) {
+            product.countInStock -= item.qty;
+            await product.save();
+        }
+    }
+
+    const createdOrder = await order.save();
+    res.status(201).json(createdOrder);
+});
 
 // @desc    Delete a order
 // @route   DELETE /api/orders/:id
 // @access  Private
 const deleteOrder = asyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id);
-    let errorReason = false;
 
-    if (order) {
-        if (req.user) {
-            const id1 = req.user._id.toString().replace(/ObjectId\("(.*)"\)/, "$1");
-            const id2 = order.user.toString().replace(/ObjectId\("(.*)"\)/, "$1");
-
-            if (id1 === id2 || req.user.isAdmin) {
-                if (!order.isPaid) {
-                    await order.remove();
-                    res.json({ message: 'Order removed'});
-                } else {
-                    errorReason = "Order can't be removed because customer has paid";
-                }
-            } else {
-                errorReason = "User not authorized to delete order";
-            }
-        } else {
-            errorReason = 'User not found';
-        }
-    } else {
-        errorReason = 'Order not found';
-    }
-
-    if (errorReason) {
+    // check is order or user missing
+    if (!order) {
         res.status(404);
-        throw new Error(errorReason);
-        // throw new Error ('Order not found')
+        throw new Error('Order not found');
+    } else if (!req.user) {
+        res.status(404);
+        throw new Error('User not found');
     }
+    const id1 = req.user._id.toString().replace(/ObjectId\("(.*)"\)/, "$1");
+    const id2 = order.user.toString().replace(/ObjectId\("(.*)"\)/, "$1");
+
+    // check is user authorized to delete/cancel order or is order already paid
+    if (id1 !== id2 && !req.user.isAdmin) {
+        res.status(401);
+        throw new Error("User not authorized to delete order");
+    } else if (order.isPaid) {
+        res.status(401);
+        throw new Error("Order can't be removed because customer has already paid");
+    }
+
+    // iterate through all items and give them back to the stock before delete
+    for (let i=0; i<order.orderItems.length; i++) {
+        const item = order.orderItems[i];
+        const productId = item.product.toString().replace(/ObjectId\("(.*)"\)/, "$1");
+        const product = await Product.findById(productId);
+        if (product) {
+            product.countInStock += item.qty;
+            await product.save();
+        }
+    }
+
+    // remove order
+    await order.remove();
+    res.json({ message: 'Order removed'});
 })
-
-
 
 // @desc    Get order by ID
 // @route   GET /api/orders/:id
@@ -92,7 +110,6 @@ const getOrderByID = asyncHandler(async (req, res) => {
         throw new Error('Order not found')
     }
 });
-
 
 // @desc    Update order to paid
 // @route   PUT /api/orders/:id/pay
@@ -113,16 +130,6 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
             email_address: req.body.payer.email_address
         }
 
-        for (let i=0; i<order.orderItems.length; i++) {
-            const item = order.orderItems[i];
-            const productId = item.product.toString().replace(/ObjectId\("(.*)"\)/, "$1");
-            const product = await Product.findById(productId);
-            if (product) {
-                product.countInStock -= item.qty;
-                await product.save();
-            }
-        }
-
         //stuff in order - we want to save it in the database
         const updatedOrder = await order.save()
         res.json(updatedOrder);
@@ -131,7 +138,6 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
         throw new Error('Order not found')
     }
 });
-
 
 // @desc    Update order to delivered
 // @route   PUT /api/orders/:id/deliver
@@ -153,9 +159,6 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
     }
 });
 
-
-
-
 // @desc    Get logged in user orders
 // @route   GET /api/orders/myorders
 // @access  Private
@@ -167,7 +170,6 @@ const getMyOrders = asyncHandler(async (req, res) => {
     res.json(orders);
     
 });
-
 
 // @desc    Get all orders
 // @route   GET /api/orders
