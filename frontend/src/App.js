@@ -45,7 +45,7 @@ const App = () => {
           <Route path='/search/:keyword' component={HomeScreen} exact />
           <Route path='/page/:pageNumber' component={HomeScreen} exact />
           <Route path='/search/:keyword/page/:pageNumber' component={HomeScreen} exact />
-          <Route path='/auth/account/activate/:token' component={EmailActivationScreen} />
+          <Route path='/account/activate/:token' component={EmailActivationScreen} />
           <Route path='/' component={HomeScreen} exact />
         </Container>
       </main>

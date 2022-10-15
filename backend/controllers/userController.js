@@ -87,7 +87,7 @@ export const preRegisterUser = asyncHandler(async(req, res) => {
         subject: `Account activation link`,
         html: `
             <p>Please use the following link to activate your account:</p>
-            <p>${CLIENT_URL}/auth/account/activate/${token}</p>
+            <p>${CLIENT_URL}/account/activate/${token}</p>
             <hr/>
             <p>This email may contain sensetive information</p>
             <p>${CLIENT_URL}</p>
