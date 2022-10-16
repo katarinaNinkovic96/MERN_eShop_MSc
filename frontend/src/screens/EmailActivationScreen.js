@@ -38,7 +38,7 @@ const EmailActivationScreen = ( {history, match} ) => {
             <br/>
             {success.line2}
             <br/>
-            Please <Link to='/login'>sign in</Link> to write a review
+            Please <Link to='/login'>sign in</Link>
         </Message> }
         { (!loading && !!error) && <Message variant='danger'>{error}</Message> }
     </>;

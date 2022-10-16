@@ -19,6 +19,8 @@ import ProductListScreen from './screens/ProductListScreen';
 import ProductManageScreen from './screens/ProductManageScreen';
 import OrderListScreen from './screens/OrderListScreen';
 import EmailActivationScreen from './screens/EmailActivationScreen';
+import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
+import ResetPasswordScreen from './screens/ResetPasswordScreen';
 
 const App = () => {
   return (
@@ -46,6 +48,8 @@ const App = () => {
           <Route path='/page/:pageNumber' component={HomeScreen} exact />
           <Route path='/search/:keyword/page/:pageNumber' component={HomeScreen} exact />
           <Route path='/account/activate/:token' component={EmailActivationScreen} />
+          <Route path='/forgot/password' component={ForgotPasswordScreen} />
+          <Route path='/password/reset/:token' component={ResetPasswordScreen} />
           <Route path='/' component={HomeScreen} exact />
         </Container>
       </main>

@@ -51,19 +51,17 @@ const LoginScreen = ({ location, history }) => {
         dispatch(login(email, password))
     }
 
-  return (
-    <FormContainer>
+    return <FormContainer>
         <h1>Sign In</h1>
-        {error && <Message variant='danger'>{error}</Message>}
-        {loading && <Loader />}
+        { error && <Message variant='danger'>{error}</Message> }
+        { loading && <Loader /> }
         <Form onSubmit={submitHandler}>
             <Form.Group controlId='email'>
                 <Form.Label>Email Address</Form.Label>
                 <Form.Control 
                     type='email' 
                     placeholder='Enter email' 
-                    //value is email from the state
-                    value={email} 
+                    value={email} // value is email from the state
                     onChange={(e) => setEmail(e.target.value)}
                 ></Form.Control>
             </Form.Group>
@@ -73,8 +71,7 @@ const LoginScreen = ({ location, history }) => {
                 <Form.Control 
                     type='password' 
                     placeholder='Enter password' 
-                    //value is password from the state
-                    value={password} 
+                    value={password} // value is password from the state
                     onChange={(e) => setPassword(e.target.value)}
                     autoComplete="on"
                 ></Form.Control>
@@ -93,8 +90,15 @@ const LoginScreen = ({ location, history }) => {
                 </Link>
             </Col>
         </Row>
+
+        <Row className='py-3'>
+            <Col>
+                <Link to='/forgot/password'>
+                    Forgot password?
+                </Link>
+            </Col>
+        </Row>
     </FormContainer>
-  )
 }
 
-export default LoginScreen
+export default LoginScreen;

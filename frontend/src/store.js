@@ -28,6 +28,7 @@ import {
 import { cartReducer } from './reducers/cartReducers';
 import {
     userLoginReducer,
+    userResetForgotPasswordReducer,
     userRegisterReducer,
     userDetailsReducer,
     userUpdateProfileReducer,
@@ -58,6 +59,7 @@ const store = configureStore({
     productTopRated: productTopRatedReducer,
     cart: cartReducer,
     userLogin: userLoginReducer,
+    userResetForgotPassword: userResetForgotPasswordReducer,
     userRegister: userRegisterReducer,
     userDetails: userDetailsReducer,
     userUpdateProfile: userUpdateProfileReducer,

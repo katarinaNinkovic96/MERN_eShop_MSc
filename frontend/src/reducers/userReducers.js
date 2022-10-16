@@ -36,6 +36,37 @@ const userLoginSlice = createSlice({
 export const userLoginReducer = userLoginSlice.reducer;
 export const { userLoginRequest, userLoginSuccess, userLoginFail, userLogout, userLoginReset } = userLoginSlice.actions;
 
+// reset/forgot password
+const userResetForgotPasswordSlice = createSlice({
+    name: 'users',
+    initialState: {
+    },
+    reducers: {
+        userResetForgotPasswordRequest: (state) => {
+            state.loading = true;
+            state.error = false;
+            state.success = false;
+        },
+        userResetForgotPasswordSuccess: (state, action) => {
+            state.loading = false;
+            state.error = false;
+            state.success = action.payload;
+        },
+        userResetForgotPasswordFail: (state, action) => {
+            state.loading = false;
+            state.success = false;
+            state.error = action.payload;
+        },
+        userResetForgotPasswordReset: (state) => {
+            state.loading = false;
+            state.error = false;
+            state.success = false;
+        }
+    }
+});
+
+export const userResetForgotPasswordReducer = userResetForgotPasswordSlice.reducer;
+export const { userResetForgotPasswordRequest, userResetForgotPasswordSuccess, userResetForgotPasswordFail, userResetForgotPasswordReset } = userResetForgotPasswordSlice.actions;
 
 //register
 const userRegisterSlice = createSlice({

@@ -10,6 +10,8 @@ dotenv.config();
 import sgMail from '@sendgrid/mail'; // SENDGRID_API_KEY
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+const CLIENT_URL = (process.env.NODE_ENV === 'development') ? process.env.CLIENT_URL_DEV : process.env.CLIENT_URL_PROD;
+
 // @desc    Auth user & get token
 // @route   POST /api/users/login
 // @access  Public
@@ -51,6 +53,83 @@ const authUser = asyncHandler(async (req, res) => {
 
 })
 
+// @desc    Forgot password
+// @route   POST /api/users/forgot-password
+// @access  Private
+export const forgotPassword = asyncHandler(async(req, res) => {
+    const email = req.body.email.toString().toLowerCase();
+
+    // check does user already exist
+    const user = await User.findOne({ email });
+    if (!user) {
+        res.status(400);
+        throw new Error('User not found.');
+    } else if (!user.isActive) {
+        res.status(400);
+        throw new Error("User account has been deactivated. Can't reset the password");
+    }
+
+    // form activation e-mail content
+    const token = jwt.sign({ email }, process.env.JWT_RESET_PASSWORD, { expiresIn: '10m' });
+    const emailData = {
+        to: email,
+        from: `${process.env.SENDGRID_SENDER_MAIL}`,
+        subject: `Password reser link`,
+        html: `
+            <p>Click <a href="${CLIENT_URL}/password/reset/${token}">here</a>
+            to reset your password</p>
+            <hr/>
+            <p>This email may contain sensetive information</p>
+            <p>${CLIENT_URL}</p>
+        `
+    };
+
+    sgMail
+        .send(emailData)
+        .then(() => {
+            return res.json({
+                line1: `Email has been sent to ${email}.`,
+                line2: "Follow the instructions to reset your password."
+            })
+        })
+        .catch((errorMessage) => {
+            console.error("error occured on sgMail send: ", errorMessage);
+            res.status(401);
+            throw new Error(`Failed to send reset password e-mail.\n${errorMessage}`);
+        });
+})
+
+// @desc    Forgot password
+// @route   PUT /api/users/reset-password
+// @access  Private
+export const resetPassword = asyncHandler(async(req, res) => {
+    // get email from JWT token
+    let email;
+    try {
+        const decoded = jwt.verify(req.body.token, process.env.JWT_RESET_PASSWORD);
+        email = decoded.email;
+    } catch (error) {
+        res.status(401);
+        throw new Error("Token has been expired. Try to register password once again.");
+    }
+
+    // check does user already exist
+    const user = await User.findOne({ email });
+    if (!user) {
+        res.status(400);
+        throw new Error("User not found.");
+    }
+
+    // update user password
+    user.password = req.body.password.toString();
+    await user.save();
+
+    res.json({
+        line1: "Congratulations!",
+        line2: "You successfully reset the passsword"
+    });
+})
+
 // @desc    Pre-Register a new user
 // @route   POST /api/users/pre-register
 // @access  Public
@@ -80,14 +159,13 @@ export const preRegisterUser = asyncHandler(async(req, res) => {
 
     // form activation e-mail content
     const token = jwt.sign({ email: email.toLowerCase() }, process.env.JWT_ACCOUNT_ACTIVATION, { expiresIn: '10m' });
-    const CLIENT_URL = (process.env.NODE_ENV === 'development') ? process.env.CLIENT_URL_DEV : process.env.CLIENT_URL_PROD;
     const emailData = {
         to: email,
         from: `${process.env.SENDGRID_SENDER_MAIL}`,
         subject: `Account activation link`,
         html: `
-            <p>Please use the following link to activate your account:</p>
-            <p>${CLIENT_URL}/account/activate/${token}</p>
+            <p>Please click <a href="${CLIENT_URL}/account/activate/${token}">here</a>
+            to activate your account</p>
             <hr/>
             <p>This email may contain sensetive information</p>
             <p>${CLIENT_URL}</p>
@@ -157,7 +235,7 @@ const registerUser = asyncHandler(async (req, res) => {
     //error 400 is bad request
     if (!user) {
         res.status(400);
-        throw new Error("User doesn't exists.");
+        throw new Error("User not found.");
     } else if (user.isVerified) {
         res.status(400);
         throw new Error("User account has already been verified.");

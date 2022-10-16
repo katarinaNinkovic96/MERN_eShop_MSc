@@ -6,6 +6,7 @@ import { userUpdateProfileRequest, userUpdateProfileSuccess, userUpdateProfileFa
 import { userListRequest, userListSuccess, userListFail, userListReset } from '../reducers/userReducers';
 import { userManipulateRequest, userManipulateSuccess, userManipulateFail } from '../reducers/userReducers';
 import { userUpdateRequest, userUpdateSuccess, userUpdateFail } from '../reducers/userReducers';
+import { userResetForgotPasswordRequest, userResetForgotPasswordSuccess, userResetForgotPasswordFail } from '../reducers/userReducers';
 import { orderListMyReset } from '../reducers/orderReducers'
 import { cartReset } from '../reducers/cartReducers';
 
@@ -59,6 +60,52 @@ export const logout = () => async (dispatch) => {
     dispatch(userListReset());
     dispatch(orderListMyReset());
     dispatch(cartReset());
+}
+
+// forgot password
+export const forgotPassword = ( email ) => async (dispatch) => {
+    try {
+        dispatch(userResetForgotPasswordRequest());
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+
+        const { data } = await axios.post(
+            '/api/users/forgot-password',
+            { email },
+            config
+        );
+
+        dispatch(userResetForgotPasswordSuccess(data));
+    } catch (error) {
+        dispatch(userResetForgotPasswordFail(error.response && error.response.data.message ? error.response.data.message : error.message))
+    }
+}
+
+// reset password
+export const resetPassword = ( token, password ) => async (dispatch) => {
+    try {
+        dispatch(userResetForgotPasswordRequest());
+
+        const config = {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+
+        const { data } = await axios.put(
+            '/api/users/reset-password',
+            { token, password },
+            config
+        );
+
+        dispatch(userResetForgotPasswordSuccess(data));
+    } catch (error) {
+        dispatch(userResetForgotPasswordFail(error.response && error.response.data.message ? error.response.data.message : error.message))
+    }
 }
 
 // pre register action for new user
