@@ -76,7 +76,10 @@ const createOrder = asyncHandler(async (req, res) => {
     sgMail
         .send(emailData)
         .then(() => {
-            return res.status(201).json({message: `Order ${orderId} created`});
+            return res.status(201).json({
+                message: `Order ${orderId} created`,
+                id: `${orderId}`
+            });
         })
         .catch((errorMessage) => {
             console.error("error occured on sgMail send: ", errorMessage);

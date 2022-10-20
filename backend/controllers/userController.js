@@ -74,7 +74,7 @@ export const forgotPassword = asyncHandler(async(req, res) => {
     const emailData = {
         to: email,
         from: `${process.env.SENDGRID_SENDER_MAIL}`,
-        subject: `Password reser link`,
+        subject: `Password reset link`,
         html: `
             <p>Click <a href="${CLIENT_URL}/password/reset/${token}">here</a>
             to reset your password</p>

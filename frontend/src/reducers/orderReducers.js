@@ -19,12 +19,16 @@ const orderCreateSlice = createSlice({
         orderCreateFail: (state, action) => {
             state.loading = false;
             state.error = action.payload;
+        },
+        orderCreateReset: (state) => {
+            state.loading = false;
+            state.error = false;
         }
     }
 });
 
 export const orderCreateReducer = orderCreateSlice.reducer;
-export const { orderCreateRequest, orderCreateSuccess, orderCreateFail } = orderCreateSlice.actions;
+export const { orderCreateRequest, orderCreateSuccess, orderCreateFail, orderCreateReset } = orderCreateSlice.actions;
 
 
 

@@ -62,7 +62,7 @@ export const createOrder = ( order, history ) => async (dispatch, getState) => {
         dispatch(orderCreateSuccess());
 
         // forward to order page
-        history.push(`/order/${data._id}`);
+        history.push(`/order/${data.id}`);
     } catch (error) {
         dispatch(orderCreateFail(error.response && error.response.data.message ? error.response.data.message : error.message))
     }

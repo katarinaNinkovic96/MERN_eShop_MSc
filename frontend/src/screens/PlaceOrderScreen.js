@@ -10,7 +10,8 @@ import ChechoutSteps from '../commponents/ChechoutSteps'
 import Loader from '../commponents/Loader'
 
 // actions
-import { createOrder } from '../actions/orderActions'
+import { createOrder } from '../actions/orderActions';
+import { orderCreateReset } from '../reducers/orderReducers';
 
 const PlaceOrderScreen = ({ history }) => {
 
@@ -39,6 +40,10 @@ const PlaceOrderScreen = ({ history }) => {
     const orderCreate = useSelector((state) => state.orderCreate);
     const { loading, error } = orderCreate;
 
+    useEffect(() => {
+        dispatch(orderCreateReset());
+    }, [dispatch]);
+
     const placeOrderHandler = () => {
         dispatch(createOrder({
             orderItems: cart.cartItems,
@@ -51,8 +56,7 @@ const PlaceOrderScreen = ({ history }) => {
         }, history))
     }
 
-  return (
-    <>
+    return <>
         <ChechoutSteps step1 step2 step3 step4 />
         <Row>
             <Col md={8}>
@@ -157,8 +161,7 @@ const PlaceOrderScreen = ({ history }) => {
                 </Card>
             </Col>
         </Row>
-    </>
-  )
+    </>;
 }
 
 export default PlaceOrderScreen

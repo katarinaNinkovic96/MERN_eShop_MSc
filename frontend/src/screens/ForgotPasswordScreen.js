@@ -24,7 +24,8 @@ const ForgotPasswordScreen = () => {
 
     }, [dispatch])
 
-    const forgotPasswordHandler = () => {
+    const forgotPasswordHandler = (e) => {
+        e.preventDefault();
         dispatch(forgotPassword(email));
     }
 
@@ -32,25 +33,27 @@ const ForgotPasswordScreen = () => {
         <h1>Forgot Password</h1>
         { (!loading && !!error) && <Message variant='danger'>{error}</Message> }
         { (!loading && !!success) && <Message variant='success'>{success.line1}<br/>{success.line2}</Message> }
-        <Form.Group autoComplete="on">
-            <Form.Label>Email Address</Form.Label>
-            <Form.Control
-                type='email'
-                placeholder='Enter email'
-                value={email} //value is email from the state
-                onChange={(e) => setEmail(e.target.value)}
-            />
-        </Form.Group>
+        <Form onSubmit={forgotPasswordHandler}>
+            <Form.Group autoComplete="on">
+                <Form.Label>Email Address</Form.Label>
+                <Form.Control
+                    type='email'
+                    placeholder='Enter email'
+                    value={email} //value is email from the state
+                    onChange={(e) => setEmail(e.target.value)}
+                />
+            </Form.Group>
 
-        { loading ?
-        <Loader /> :
-        <Button
-            className='btn-sm'
-            variant='warning'
-            onClick={forgotPasswordHandler}
-        >
-            Send
-        </Button> }
+            { loading ?
+            <Loader /> :
+            <Button
+                className='btn-sm'
+                variant='warning'
+                type='submit'
+            >
+                Send
+            </Button> }
+        </Form>
     </FormContainer>;
 }
 
